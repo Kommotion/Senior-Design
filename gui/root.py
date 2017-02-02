@@ -39,17 +39,26 @@ class Main(ttk.Frame):
         pass
 
     def _choose_file(self):
-        """ Chooses the file and stuff"""
-        file = filedialog.askopenfilename(initialdir=file_path)
+        """ Chooses the file and stuff """
+        file = filedialog.askopenfilename(initialdir=file_path, filetypes=(
+                                            ('JPG files', '*.jpg'),
+                                            ('PNG files', '*.png'),
+                                            ('BMP files', '*.bmp'),
+                                            ('STL files', '*.stl'),
+                                            ('All files', '*.*')))
 
         self.file = file
+        self.file_label.set(file)
+        print(self.file)
 
     def init_gui(self):
+        """ Initializes the GUI """
         self.root.geometry('800x500')
         self.root.title('3D Laser Etcher')
         self.root.wm_iconbitmap(file_path + r'\ucf.ico')
         self.root.option_add('*tearOff', 'FALSE')
 
+        # ------- menubar ------- #
         self.menubar = tkinter.Menu(self.root)
 
         self.menu_file = tkinter.Menu(self.menubar)
@@ -65,10 +74,23 @@ class Main(ttk.Frame):
         self.menubar.add_cascade(menu=self.menu_help, label='Help')
 
         self.root.config(menu=self.menubar)
+        # ------------------------- #
 
-        file = filedialog.askopenfilename(initialdir=file_path)
+        # --- Open file widgets --- #
+        select_file = 'Select File (Image file or STL file)'
+        self.open_file_label = ttk.Label(text=select_file, anchor=tkinter.W)
+        self.open_file_label.grid(row=0, column=0, sticky=tkinter.W, pady=5, padx=5)
 
+        self.open_file_button = ttk.Button(text='Browse', command=self._choose_file, width=7)
+        self.open_file_button.grid(row=1, column=2, padx=5)
 
+        self.file_label = tkinter.StringVar()
+        self.open_file_entry = ttk.Entry(textvariable=self.file_label, width=50, justify='left', state='readonly')
+        self.open_file_entry.grid(row=1, column=0, sticky=tkinter.W, padx=5)
+        # ------------------------- #
+
+        for child in self.winfo_children():
+            child.grid_configure()
 
 
 if __name__ == '__main__':
