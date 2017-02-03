@@ -11,3 +11,10 @@ FILE_EXTENSIONS = (
     ('BMP files', '*.bmp'),
     ('STL files', '*.stl'),
     ('All files', '*.*'))
+
+CONVERSION_MODES = [
+    ('BMP', '.bmp'),
+    ('PPM', '.ppm'),
+    ('PGM', '.pgm'),
+    ('PBM', '.pbm')
+]

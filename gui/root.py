@@ -27,6 +27,7 @@ class Main(ttk.Frame):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         self.file_path = os.path.dirname(os.path.realpath(__file__))
         self.file = None
+        self.conversion_image = None
         self.root = parent
         self.init_gui()
 
@@ -86,6 +87,9 @@ class Main(ttk.Frame):
 
         self.enable_widgets(file_type)
 
+    def convert_to_bitmap(self):
+        """ Converts the image to bitmap image """
+
     def init_gui(self):
         """ Initializes the GUI and all the widgets
 
@@ -136,6 +140,19 @@ class Main(ttk.Frame):
         # ---- 2D to 3D conversion widgets ---- #
         self.step_2_label = ttk.Label(text='Step 2:', anchor=tkinter.W)
         self.step_2_label.grid(row=4, padx=5, sticky=tkinter.W)
+
+        self.conversion_label = ttk.Label(text='Bitmap Tracing', anchor=tkinter.W)
+        self.conversion_label.grid(padx=5, pady=5, sticky=tkinter.W)
+
+        self.conversion_map_type = tkinter.StringVar()
+        self.conversion_radios = list()
+
+        for text, mode in constants.CONVERSION_MODES:
+            button = ttk.Radiobutton(text=text, variable=self.conversion_map_type, value=mode)
+            button.grid(sticky=tkinter.W, padx=5)
+            self.conversion_radios.append(button)
+
+
 
         for child in self.winfo_children():
             child.grid_configure()
