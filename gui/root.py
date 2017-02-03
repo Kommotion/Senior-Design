@@ -18,6 +18,7 @@ import os
 import imghdr
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 from utils import constants
 
 
@@ -29,17 +30,35 @@ class Main(ttk.Frame):
         self.root = parent
         self.init_gui()
 
-    def _quit(self):
+    def quit(self):
         """ Terminates the program """
         quit()
 
-    def _show_copyrights(self):
+    def show_copyrights(self):
         """ Shows copyright dialogues for all software included """
         # TODO
         # Show all the copyrights and credits for software used
         pass
 
-    def _choose_file(self):
+    def enable_widgets(self, filetype):
+        """ Enables the widgets based on the filetype given
+
+        A regular raster image will enable the next step in 2D-3D conversion
+        A STL file will skip the 2D-3D conversion and enable the slicing widget
+
+        :param filetype: The file extension from the openfile menu
+        :return:
+        """
+        # TODO
+        # Parse filetype and determine which widgets
+        # to enable
+
+    def disable_widgets(self):
+        """ Disables all the widgets except the primary open file ones """
+        # TODO
+        # Disable all the widgets
+
+    def choose_file(self):
         """ Handles the open file button """
         file = filedialog.askopenfilename(initialdir=self.file_path, filetypes=constants.FILE_EXTENSIONS)
 
@@ -56,14 +75,10 @@ class Main(ttk.Frame):
             file_type = file_type[len(file_type)-1]
 
         if file_type not in constants.ACCEPTABLE_FILETYPES:
-            print('not in acceptable filetypes')
-            # TODO
-            # Disable all GUI compomnents
-            # Alert user invalid filetype
+            messagebox.showerror('Error', 'Wrong Filetype!\n\nAcceptable types: stl, jpg, png')
+            self.disable_widgets()
 
-        # TODO
-        # Passes all checks
-        # Enable all next step
+        self.enable_widgets(file_type)
 
     def init_gui(self):
         """ Initializes the GUI """
@@ -76,12 +91,12 @@ class Main(ttk.Frame):
         self.menubar = tkinter.Menu(self.root)
 
         self.menu_file = tkinter.Menu(self.menubar)
-        self.menu_file.add_command(label='Exit', command=self._quit)
+        self.menu_file.add_command(label='Exit', command=self.quit)
 
         self.menu_edit = tkinter.Menu(self.menubar)
 
         self.menu_help = tkinter.Menu(self.menubar)
-        self.menu_help.add_command(label='Copyrights', command=self._show_copyrights)
+        self.menu_help.add_command(label='Copyrights', command=self.show_copyrights)
 
         self.menubar.add_cascade(menu=self.menu_file, label='File')
         self.menubar.add_cascade(menu=self.menu_edit, label='Edit')
@@ -95,7 +110,7 @@ class Main(ttk.Frame):
         self.open_file_label = ttk.Label(text=select_file, anchor=tkinter.W)
         self.open_file_label.grid(row=0, column=0, sticky=tkinter.W, pady=5, padx=5)
 
-        self.open_file_button = ttk.Button(text='Browse', command=self._choose_file, width=7)
+        self.open_file_button = ttk.Button(text='Browse', command=self.choose_file, width=7)
         self.open_file_button.grid(row=1, column=2, padx=5)
 
         self.file_label = tkinter.StringVar()
