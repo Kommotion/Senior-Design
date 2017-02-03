@@ -15,15 +15,16 @@
 """
 import tkinter
 import os
+import imghdr
 from tkinter import ttk
 from tkinter import filedialog
-
-file_path = os.path.dirname(os.path.realpath(__file__))
+from utils import constants
 
 
 class Main(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
+        self.file_path = os.path.dirname(os.path.realpath(__file__))
         self.file = None
         self.root = parent
         self.init_gui()
@@ -39,23 +40,36 @@ class Main(ttk.Frame):
         pass
 
     def _choose_file(self):
-        """ Chooses the file and stuff """
-        file = filedialog.askopenfilename(initialdir=file_path, filetypes=(
-                                            ('JPG files', '*.jpg'),
-                                            ('PNG files', '*.png'),
-                                            ('BMP files', '*.bmp'),
-                                            ('STL files', '*.stl'),
-                                            ('All files', '*.*')))
+        """ Handles the open file button """
+        file = filedialog.askopenfilename(initialdir=self.file_path, filetypes=constants.FILE_EXTENSIONS)
 
+        if not file:
+            return
+
+        self.file_path = file
         self.file = file
         self.file_label.set(file)
-        print(self.file)
+        file_type = imghdr.what(self.file)
+
+        if not file_type:
+            file_type = self.file.split('.')
+            file_type = file_type[len(file_type)-1]
+
+        if file_type not in constants.ACCEPTABLE_FILETYPES:
+            print('not in acceptable filetypes')
+            # TODO
+            # Disable all GUI compomnents
+            # Alert user invalid filetype
+
+        # TODO
+        # Passes all checks
+        # Enable all next step
 
     def init_gui(self):
         """ Initializes the GUI """
         self.root.geometry('800x500')
         self.root.title('3D Laser Etcher')
-        self.root.wm_iconbitmap(file_path + r'\ucf.ico')
+        self.root.wm_iconbitmap(self.file_path + r'\ucf.ico')
         self.root.option_add('*tearOff', 'FALSE')
 
         # ------- menubar ------- #
