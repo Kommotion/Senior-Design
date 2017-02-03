@@ -59,7 +59,13 @@ class Main(ttk.Frame):
         # Disable all the widgets
 
     def choose_file(self):
-        """ Handles the open file button """
+        """ Handles the open file button and the given file
+
+        This method tests to make sure that the given file is a 2D raster image,
+        however it will not test that the given STL file is valid. It will be
+        assumed that the given STL file is valid, otherwise unknown consequences
+        will occur on the user - program failure
+        """
         file = filedialog.askopenfilename(initialdir=self.file_path, filetypes=constants.FILE_EXTENSIONS)
 
         if not file:
@@ -81,7 +87,10 @@ class Main(ttk.Frame):
         self.enable_widgets(file_type)
 
     def init_gui(self):
-        """ Initializes the GUI """
+        """ Initializes the GUI and all the widgets
+
+        Tkinter's Grid geometry manager is used instead of pack
+        """
         self.root.geometry('800x500')
         self.root.title('3D Laser Etcher')
         self.root.wm_iconbitmap(self.file_path + r'\ucf.ico')
