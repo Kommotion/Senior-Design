@@ -30,7 +30,7 @@ class Main(ttk.Frame):
         self.root = parent
         self.init_gui()
 
-    def quit(self):
+    def _quit(self):
         """ Terminates the program """
         quit()
 
@@ -91,7 +91,7 @@ class Main(ttk.Frame):
         self.menubar = tkinter.Menu(self.root)
 
         self.menu_file = tkinter.Menu(self.menubar)
-        self.menu_file.add_command(label='Exit', command=self.quit)
+        self.menu_file.add_command(label='Exit', command=self._quit)
 
         self.menu_edit = tkinter.Menu(self.menubar)
 
@@ -107,16 +107,26 @@ class Main(ttk.Frame):
 
         # --- Open file widgets --- #
         select_file = 'Select File (Image file or STL file)'
+        self.step_1_label = ttk.Label(text='Step 1:', anchor=tkinter.W)
+        self.step_1_label.grid(padx=5, sticky=tkinter.W)
+
         self.open_file_label = ttk.Label(text=select_file, anchor=tkinter.W)
-        self.open_file_label.grid(row=0, column=0, sticky=tkinter.W, pady=5, padx=5)
+        self.open_file_label.grid(row=1, sticky=tkinter.W, pady=5, padx=5)
 
         self.open_file_button = ttk.Button(text='Browse', command=self.choose_file, width=7)
-        self.open_file_button.grid(row=1, column=2, padx=5)
+        self.open_file_button.grid(row=2, column=2, padx=5)
 
         self.file_label = tkinter.StringVar()
         self.open_file_entry = ttk.Entry(textvariable=self.file_label, width=50, justify='left', state='readonly')
-        self.open_file_entry.grid(row=1, column=0, sticky=tkinter.W, padx=5)
+        self.open_file_entry.grid(row=2, column=0, sticky=tkinter.W, padx=5)
         # ------------------------- #
+
+        self.separator_1 = ttk.Separator(orient=tkinter.HORIZONTAL, )
+        self.separator_1.grid(row=3, padx=5, pady=15, sticky='we', columnspan=5)
+
+        # ---- 2D to 3D conversion widgets ---- #
+        self.step_2_label = ttk.Label(text='Step 2:', anchor=tkinter.W)
+        self.step_2_label.grid(row=4, padx=5, sticky=tkinter.W)
 
         for child in self.winfo_children():
             child.grid_configure()
