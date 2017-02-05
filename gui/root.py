@@ -22,6 +22,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from utils import constants
 from utils import parsers
+from utils import calculators
 
 
 class Main(ttk.Frame):
@@ -113,7 +114,8 @@ class Main(ttk.Frame):
 
         Tkinter's Grid geometry manager is used instead of pack
         """
-        self.root.geometry('800x500')
+        geo = calculators.center(self.root, 800, 500)
+        self.root.geometry(geo)
         self.root.title('3D Laser Etcher')
         self.root.wm_iconbitmap(self.file_path + r'\ucf.ico')
         self.root.option_add('*tearOff', 'FALSE')
