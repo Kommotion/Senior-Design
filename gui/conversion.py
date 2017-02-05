@@ -17,6 +17,7 @@ import tkinter
 import os
 from tkinter import ttk
 from utils import constants
+from utils import calculators
 
 
 class ConversionOptions:
@@ -30,12 +31,6 @@ class ConversionOptions:
         self._options['changed'] = False
         self._custom_potrace = tkinter.StringVar()
         self._init_gui()
-
-    def _get_positioning(self, parent):
-        """ Gets the coordinates from parent
-
-        :returns x, y
-        """
 
     def get(self):
         """ Returns the options """
@@ -55,13 +50,14 @@ class ConversionOptions:
     def _init_gui(self):
         """ Initializes all the widgets """
         self.top.grab_set()
+        geo = calculators.center(self.top.master, 425, 150)
+        self.top.geometry(geo)
         self.top.title('Conversion Options')
-        self.top.geometry('425x150')
         self.top.resizable(height=False, width=False)
         self.top.wm_iconbitmap(self._file_path + r'\ucf.ico')
         self.top.grid_columnconfigure(1, weight=1)
 
-        label = 'Bitmap filetype:\t   Custom commandline:'
+        label = 'Bitmap filetype:\t   Custom command line:'
         self.output_label = ttk.Label(self.top, text=label, anchor=tkinter.W)
         self.output_label.grid(padx=5, pady=5, columnspan=10, sticky=tkinter.W)
 
@@ -81,7 +77,7 @@ class ConversionOptions:
         self.custom_entry = ttk.Entry(self.top, textvariable=self._custom_potrace, width=50)
         self.custom_entry.grid(row=1, column=1, columnspan=15, padx=5, sticky=tkinter.E)
 
-        label = 'Warning: Only change the commandline option ' \
+        label = 'Warning: Only change the command line option ' \
                 'if you know what you\'re doing. Lookup Imagemagick ' \
                 'command line conversion options for more info.'
         self.warning_label = ttk.Label(self.top, text=label, wraplength=300, justify='left')
