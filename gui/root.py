@@ -16,10 +16,12 @@
 import tkinter
 import os
 import imghdr
+from conversion import ConversionOptions
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 from utils import constants
+from utils import parsers
 
 
 class Main(ttk.Frame):
@@ -90,6 +92,22 @@ class Main(ttk.Frame):
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
 
+    def bit_conversion_options(self):
+        """ Brings up the conversion options menu for bitmap tracing
+
+        Parses the results and readies for potrace conversion subprocess call
+        """
+        con_opts = ConversionOptions(self.root, self.conversion_map_type)
+        self.wait_window(con_opts.top)
+        options = con_opts.get()
+        if not options['changed']:
+            return
+
+        self.conversion_map_type = parsers.conversion(options, 'filetype')
+        self.custom_potrace = parsers.conversion(options, 'potrace')
+        print(self.conversion_map_type)
+        print(self.custom_potrace)
+
     def init_gui(self):
         """ Initializes the GUI and all the widgets
 
@@ -126,7 +144,7 @@ class Main(ttk.Frame):
         self.open_file_label = ttk.Label(text=select_file, anchor=tkinter.W)
         self.open_file_label.grid(row=1, sticky=tkinter.W, pady=5, padx=5)
 
-        self.open_file_button = ttk.Button(text='Browse', command=self.choose_file, width=7)
+        self.open_file_button = ttk.Button(text='Browse', command=self.choose_file)
         self.open_file_button.grid(row=2, column=2, padx=5)
 
         self.file_label = tkinter.StringVar()
@@ -144,15 +162,16 @@ class Main(ttk.Frame):
         self.conversion_label = ttk.Label(text='Bitmap Tracing', anchor=tkinter.W)
         self.conversion_label.grid(padx=5, pady=5, sticky=tkinter.W)
 
-        self.conversion_map_type = tkinter.StringVar()
-        self.conversion_radios = list()
+        self.conversion_options_button = ttk.Button(text='Options', command=self.bit_conversion_options)
+        self.conversion_options_button.grid(padx=5, pady=5, sticky=tkinter.W)
+        self.conversion_map_type = '.bmp'
 
-        for text, mode in constants.CONVERSION_MODES:
-            button = ttk.Radiobutton(text=text, variable=self.conversion_map_type, value=mode)
-            button.grid(sticky=tkinter.W, padx=5)
-            self.conversion_radios.append(button)
+        #self.conversion_radios = dict()
 
-
+        # for text, mode in constants.CONVERSION_MODES:
+        #     button = ttk.Radiobutton(text=text, variable=self.conversion_map_type, value=mode)
+        #     button.grid(sticky=tkinter.W, padx=5)
+        #     self.conversion_radios[text] = button
 
         for child in self.winfo_children():
             child.grid_configure()
