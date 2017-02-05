@@ -21,9 +21,7 @@ from utils import constants
 
 class ConversionOptions:
     def __init__(self, parent, conversion_type):
-        top = self.top = tkinter.Toplevel(parent)
-        top.title('Conversion Options')
-        top.geometry('425x150')
+        self.top = tkinter.Toplevel(parent)
         self._file_path = os.path.dirname(os.path.realpath(__file__))
         self._conversion_map_type = tkinter.StringVar()
         self._conversion_map_type.set(conversion_type)
@@ -57,6 +55,8 @@ class ConversionOptions:
     def _init_gui(self):
         """ Initializes all the widgets """
         self.top.grab_set()
+        self.top.title('Conversion Options')
+        self.top.geometry('425x150')
         self.top.resizable(height=False, width=False)
         self.top.wm_iconbitmap(self._file_path + r'\ucf.ico')
         self.top.grid_columnconfigure(1, weight=1)
@@ -64,10 +64,6 @@ class ConversionOptions:
         label = 'Bitmap filetype:\t   Custom commandline:'
         self.output_label = ttk.Label(self.top, text=label, anchor=tkinter.W)
         self.output_label.grid(padx=5, pady=5, columnspan=10, sticky=tkinter.W)
-
-        # self.output_label = ttk.Label(
-        # label = 'Custom commandline:'self.top, text=label, anchor=tkinter.E)
-        # self.output_label.grid(padx=5, column=1, columnspan=10, sticky=tkinter.E)
 
         row = 0
         for text, mode in constants.CONVERSION_MODES:
