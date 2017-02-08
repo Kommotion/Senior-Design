@@ -93,6 +93,7 @@ class Main(ttk.Frame):
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
 
+
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
 
@@ -120,6 +121,10 @@ class Main(ttk.Frame):
         self.root.wm_iconbitmap(self.file_path + r'\ucf.ico')
         self.root.option_add('*tearOff', 'FALSE')
 
+        # layout all of the main containers
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
         # ------- menubar ------- #
         self.menubar = tkinter.Menu(self.root)
 
@@ -139,34 +144,43 @@ class Main(ttk.Frame):
         # ------------------------- #
 
         # --- Open file widgets --- #
+        self.open_file_frame = ttk.Frame(self.root, width=200, height=10)
+        self.open_file_frame.grid(row=0, column=0, sticky='NW')
+
         select_file = 'Select File (Image file or STL file)'
-        self.step_1_label = ttk.Label(text='Step 1:', anchor=tkinter.W)
+        self.step_1_label = ttk.Label(self.open_file_frame, text='Step 1:', anchor=tkinter.W)
         self.step_1_label.grid(padx=5, sticky=tkinter.W)
 
-        self.open_file_label = ttk.Label(text=select_file, anchor=tkinter.W)
+        self.open_file_label = ttk.Label(self.open_file_frame, text=select_file, anchor=tkinter.W)
         self.open_file_label.grid(row=1, sticky=tkinter.W, pady=5, padx=5)
 
-        self.open_file_button = ttk.Button(text='Browse', command=self.choose_file)
+        self.open_file_button = ttk.Button(self.open_file_frame, text='Browse', command=self.choose_file)
         self.open_file_button.grid(row=2, column=2, padx=5)
 
         self.file_label = tkinter.StringVar()
-        self.open_file_entry = ttk.Entry(textvariable=self.file_label, width=50, justify='left', state='readonly')
+        self.open_file_entry = ttk.Entry(self.open_file_frame, textvariable=self.file_label, width=50, justify='left', state='readonly')
         self.open_file_entry.grid(row=2, column=0, sticky=tkinter.W, padx=5)
+
+        self.separator_1 = ttk.Separator(self.open_file_frame, orient=tkinter.HORIZONTAL)
+        self.separator_1.grid(row=3, padx=5, pady=15, sticky='we', columnspan=5)
         # ------------------------- #
 
-        self.separator_1 = ttk.Separator(orient=tkinter.HORIZONTAL, )
-        self.separator_1.grid(row=3, padx=5, pady=15, sticky='we', columnspan=5)
-
         # ---- 2D to 3D conversion widgets ---- #
-        self.step_2_label = ttk.Label(text='Step 2:', anchor=tkinter.W)
-        self.step_2_label.grid(row=4, padx=5, sticky=tkinter.W)
+        self.conversion_frame = ttk.Frame(self.root, width=200, height=50)
+        self.conversion_frame.grid(row=1, column=0, sticky='NW')
 
-        self.conversion_label = ttk.Label(text='Bitmap Tracing', anchor=tkinter.W)
-        self.conversion_label.grid(padx=5, pady=5, sticky=tkinter.W)
+        self.step_2_label = ttk.Label(self.conversion_frame, text='Step 2:', anchor=tkinter.W)
+        self.step_2_label.grid(row=0, padx=5, sticky=tkinter.W)
 
-        self.conversion_options_button = ttk.Button(text='Options', command=self.bit_conversion_options)
-        self.conversion_options_button.grid(padx=5, pady=5, sticky=tkinter.W)
+        self.conversion_label = ttk.Label(self.conversion_frame, text='Bitmap Tracing', anchor=tkinter.W)
+        self.conversion_label.grid(row=1, padx=5, pady=5, sticky=tkinter.W)
+
+        self.conversion_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.bit_conversion_options)
+        self.conversion_options_button.grid(row=2, padx=5, pady=5, sticky=tkinter.W)
         self.conversion_map_type = '.bmp'
+
+        self.conversion_start = ttk.Button(self.conversion_frame, text='Start', command=self.convert_to_bitmap)
+        self.conversion_start.grid(row=2, column=1, padx=5, pady=5)
 
         #self.conversion_radios = dict()
 
