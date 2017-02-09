@@ -16,6 +16,7 @@
 import tkinter
 import os
 import imghdr
+import executors
 from conversion import ConversionOptions
 from tkinter import ttk
 from tkinter import filedialog
@@ -92,7 +93,8 @@ class Main(ttk.Frame):
 
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
-
+        options = {}
+        result = executors.exec_potrace(**options)
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
@@ -172,8 +174,8 @@ class Main(ttk.Frame):
         self.step_2_label = ttk.Label(self.conversion_frame, text='Step 2:', anchor=tkinter.W)
         self.step_2_label.grid(row=0, padx=5, sticky=tkinter.W)
 
-        self.conversion_label = ttk.Label(self.conversion_frame, text='Bitmap Tracing', anchor=tkinter.W)
-        self.conversion_label.grid(row=1, padx=5, pady=5, sticky=tkinter.W)
+        self.conversion_label = ttk.Label(self.conversion_frame, text='Bitmap Conversion', anchor=tkinter.W)
+        self.conversion_label.grid(row=1, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
 
         self.conversion_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.bit_conversion_options)
         self.conversion_options_button.grid(row=2, padx=5, pady=5, sticky=tkinter.W)

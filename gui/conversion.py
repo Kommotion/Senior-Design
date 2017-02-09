@@ -78,7 +78,8 @@ class ConversionOptions:
         self.custom_entry.grid(row=1, column=1, columnspan=15, padx=5, sticky=tkinter.E)
 
         label = 'Warning: Only change the command line option ' \
-                'if you know what you\'re doing. Lookup Imagemagick ' \
-                'command line conversion options for more info.'
+                'if you know what you\'re doing. This adds on ' \
+                'to end of the convert command so there is no ' \
+                'need to specify input and output files.'
         self.warning_label = ttk.Label(self.top, text=label, wraplength=300, justify='left')
         self.warning_label.grid(row=2, column=1, rowspan=3)
