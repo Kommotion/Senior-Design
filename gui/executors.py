@@ -1,22 +1,27 @@
 """ Contains all the functions for subprocess calls """
 import subprocess
 import os
+from utils import parsers
 
 
-def exec_potrace(line='', filetype=None, filename=None, filepath=None):
+def exec_potrace(filepath, line='', filetype=None, filename=None):
     """ Executes a subprocess call that executes imagemagick's convert
 
     :returns True if passed, False if failed
     """
     if filename is None:
-        print(filename, line, filetype)
         return False
 
-    file_in = filename
-    temp = filename.split('/')
-    file_out = os.path.dirname(filepath)
-    file_out = os.path.join(file_out, 'file1{}'.format(filetype))
-    command = 'convert {} {} {}'.format(file_in, file_out, line)
-    print(command)
+    line = line if line is True else ''
+    name = filename.split('\\')
+    name = name[len(name)-1].split('.')[0]
+    file_out = os.path.join(filepath, '{}{}'.format(name, filetype))
+    convert_path = parsers.get_from_config('convert_path', os.path.dirname(os.path.realpath(__file__)))
 
-    return True
+    if os.path.isfile(convert_path):
+        os.remove(convert_path)
+
+    command = '{} {} {} {}'.format(convert_path, filename, file_out, line)
+    result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+
+    return os.path.isfile(file_out)
