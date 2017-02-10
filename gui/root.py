@@ -32,7 +32,16 @@ class Main(ttk.Frame):
         self.file_path = os.path.dirname(os.path.realpath(__file__))
         self.file = None
         self.conversion_image = None
+        self.conversion_map_type = None
+        self.custom_imagemagick = None
         self.root = parent
+
+        self.objects_path = os.path.join(self.file_path, 'objects')
+        if not os.path.exists(self.objects_path):
+            os.makedirs(self.objects_path)
+
+
+
         self.init_gui()
 
     def _quit(self):
@@ -76,7 +85,6 @@ class Main(ttk.Frame):
         if not file:
             return
 
-        self.file_path = file
         self.file = file
         self.file_label.set(file)
         file_type = imghdr.what(self.file)
@@ -93,13 +101,18 @@ class Main(ttk.Frame):
 
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
-        options = {}
+        options = dict()
+        options['line'] = self.custom_imagemagick
+        options['filetype'] = self.conversion_map_type
+        options['filename'] = self.file
+        options['filepath'] = self.objects_path
         result = executors.exec_potrace(**options)
+        print(result)
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
 
-        Parses the results and readies for potrace conversion subprocess call
+        Parses the results and readies for imagemagick conversion subprocess call
         """
         con_opts = ConversionOptions(self.root, self.conversion_map_type)
         self.wait_window(con_opts.top)
@@ -108,9 +121,9 @@ class Main(ttk.Frame):
             return
 
         self.conversion_map_type = parsers.conversion(options, 'filetype')
-        self.custom_potrace = parsers.conversion(options, 'potrace')
+        self.custom_imagemagick = parsers.conversion(options, 'imagemagick')
         print(self.conversion_map_type)
-        print(self.custom_potrace)
+        print(self.custom_imagemagick)
 
     def init_gui(self):
         """ Initializes the GUI and all the widgets
