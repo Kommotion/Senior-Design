@@ -29,7 +29,7 @@ class ConversionOptions:
         self._conversion_radios = dict()
         self._options = dict()
         self._options['changed'] = False
-        self._custom_potrace = tkinter.StringVar()
+        self._custom_imagemagick = tkinter.StringVar()
         self._init_gui()
 
     def get(self):
@@ -40,7 +40,7 @@ class ConversionOptions:
         """ Sets all the options and saves into a dict """
         self._options['changed'] = True
         self._options['filetype'] = self._conversion_map_type
-        self._options['potrace'] = self._custom_potrace
+        self._options['imagemagick'] = self._custom_imagemagick
         self._quit()
 
     def _quit(self):
@@ -74,7 +74,7 @@ class ConversionOptions:
         self.cancel_button = ttk.Button(self.top, text='Cancel', command=self._quit)
         self.cancel_button.grid(row=5, column=1, padx=5, pady=5, sticky=tkinter.E)
 
-        self.custom_entry = ttk.Entry(self.top, textvariable=self._custom_potrace, width=50)
+        self.custom_entry = ttk.Entry(self.top, textvariable=self._custom_imagemagick, width=50)
         self.custom_entry.grid(row=1, column=1, columnspan=15, padx=5, sticky=tkinter.E)
 
         label = 'Warning: Only change the command line option ' \
