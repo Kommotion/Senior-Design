@@ -40,8 +40,6 @@ class Main(ttk.Frame):
         if not os.path.exists(self.objects_path):
             os.makedirs(self.objects_path)
 
-
-
         self.init_gui()
 
     def _quit(self):
@@ -81,6 +79,7 @@ class Main(ttk.Frame):
         will occur on the user - program failure
         """
         file = filedialog.askopenfilename(initialdir=self.file_path, filetypes=constants.FILE_EXTENSIONS)
+        file = os.path.normpath(file)
 
         if not file:
             return
@@ -107,7 +106,14 @@ class Main(ttk.Frame):
         options['filename'] = self.file
         options['filepath'] = self.objects_path
         result = executors.exec_potrace(**options)
-        print(result)
+
+        if not result:
+            messagebox.showerror('Error', 'There was an error in conversion process!')
+            return
+
+        # TODO
+        # Conversion passed, enable next set of widgets
+        # Show conversion passed
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
@@ -122,8 +128,6 @@ class Main(ttk.Frame):
 
         self.conversion_map_type = parsers.conversion(options, 'filetype')
         self.custom_imagemagick = parsers.conversion(options, 'imagemagick')
-        print(self.conversion_map_type)
-        print(self.custom_imagemagick)
 
     def init_gui(self):
         """ Initializes the GUI and all the widgets
