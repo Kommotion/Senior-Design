@@ -25,7 +25,7 @@ def exec_potrace(filepath, line='', filetype=None, filename=None):
     :returns True if passed, False if failed
     """
     if filename is None:
-        return False
+        return '', False
 
     line = line if line is True else ''
     name = filename.split('\\')
@@ -33,10 +33,13 @@ def exec_potrace(filepath, line='', filetype=None, filename=None):
     file_out = os.path.join(filepath, '{}{}'.format(name, filetype))
     convert_path = parsers.get_from_config('convert_path', os.path.dirname(os.path.realpath(__file__)))
 
+    if not convert_path:
+        return '', False
+
     if os.path.isfile(convert_path):
         os.remove(convert_path)
 
     command = '{} {} {} {}'.format(convert_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
-    return os.path.isfile(file_out)
+    return file_out, os.path.isfile(file_out)
