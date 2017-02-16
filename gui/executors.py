@@ -19,7 +19,7 @@ import os
 from utils import parsers
 
 
-def exec_potrace(filepath, line='', filetype=None, filename=None):
+def exec_imagemagick(filepath, line='', filetype=None, filename=None):
     """ Executes a subprocess call that executes imagemagick's convert
 
     :returns True if passed, False if failed
@@ -36,10 +36,36 @@ def exec_potrace(filepath, line='', filetype=None, filename=None):
     if not convert_path:
         return '', False
 
-    if os.path.isfile(convert_path):
-        os.remove(convert_path)
+    if os.path.isfile(file_out):
+        os.remove(file_out)
 
     command = '{} {} {} {}'.format(convert_path, filename, file_out, line)
+    result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+
+    return file_out, os.path.isfile(file_out)
+
+
+def exec_potrace(filepath, line='', filename=None):
+    """ Executes a subprocess call that executes imagemagick's convert
+
+    :returns True if passed, False if failed
+    """
+    if filename is None:
+        return '', False
+
+    line = line if line is True else ''
+    name = filename.split('\\')
+    name = name[len(name)-1].split('.')[0]
+    file_out = os.path.join(filepath, '{}{}'.format(name, '.svg'))
+    potrace_path = parsers.get_from_config('potrace_path', os.path.dirname(os.path.realpath(__file__)))
+
+    if not potrace_path:
+        return '', False
+
+    if os.path.isfile(file_out):
+        os.remove(file_out)
+
+    command = '{} {} -o {} --flat {}'.format(potrace_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
