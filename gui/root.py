@@ -18,6 +18,7 @@ import os
 import imghdr
 import executors
 from conversion import ConversionOptions
+from tracing import TracingOptions
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -34,6 +35,7 @@ class Main(ttk.Frame):
         self.conversion_image = None
         self.conversion_map_type = None
         self.custom_imagemagick = None
+        self.custom_potrace = None
         self.root = parent
 
         self.objects_path = os.path.join(self.file_path, 'objects')
@@ -61,14 +63,18 @@ class Main(ttk.Frame):
         :param filetype: The file extension from the openfile menu
         :return:
         """
+
         # TODO
         # Parse filetype and determine which widgets
         # to enable
 
     def disable_widgets(self):
-        """ Disables all the widgets except the primary open file ones """
-        # TODO
-        # Disable all the widgets
+        """ Disables all the start buttons except the primary open file ones """
+        self.conversion_options_button.config(state='disabled')
+        self.conversion_start.config(state='disabled')
+        self.tracing_options_button.config(state='disabled')
+        self.tracing_start.config(state='disabled')
+
 
     def choose_file(self):
         """ Handles the open file button and the given file
@@ -79,11 +85,11 @@ class Main(ttk.Frame):
         will occur on the user - program failure
         """
         file = filedialog.askopenfilename(initialdir=self.file_path, filetypes=constants.FILE_EXTENSIONS)
-        file = os.path.normpath(file)
 
         if not file:
             return
 
+        file = os.path.normpath(file)
         self.file = file
         self.file_label.set(file)
         file_type = imghdr.what(self.file)
@@ -96,7 +102,9 @@ class Main(ttk.Frame):
             messagebox.showerror('Error', 'Wrong Filetype!\n\nAcceptable types: stl, jpg, png')
             self.disable_widgets()
 
-        self.enable_widgets(file_type)
+        # Enable the next step
+        self.conversion_options_button.config(state='normal')
+        self.conversion_start.config(state='normal')
 
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
@@ -105,15 +113,29 @@ class Main(ttk.Frame):
         options['filetype'] = self.conversion_map_type
         options['filename'] = self.file
         options['filepath'] = self.objects_path
-        result = executors.exec_potrace(**options)
+        file_out, result = executors.exec_imagemagick(**options)
 
         if not result:
             messagebox.showerror('Error', 'There was an error in conversion process!')
             return
 
-        # TODO
-        # Conversion passed, enable next set of widgets
-        # Show conversion passed
+        self.file = file_out
+        self.tracing_options_button.config(state='normal')
+        self.tracing_start.config(state='normal')
+
+    def potrace_trace(self):
+        """ Uses potrace to trace the bitmap and output to SVG file """
+        options = dict()
+        options['line'] = self.custom_potrace
+        options['filename'] = self.file
+        options['filepath'] = self.objects_path
+        file_out, result = executors.exec_potrace(**options)
+
+        if not result:
+            messagebox.showerror('Error', 'There was an error in tracing process!')
+            return
+
+        self.file = file_out
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
@@ -128,6 +150,19 @@ class Main(ttk.Frame):
 
         self.conversion_map_type = parsers.conversion(options, 'filetype')
         self.custom_imagemagick = parsers.conversion(options, 'imagemagick')
+
+    def tracing_options(self):
+        """ Brings up the tracing menu for tracing
+
+        Parses the results and readies for potrace output
+        """
+        tracing_opts = TracingOptions(self.root)
+        self.wait_window(tracing_opts.top)
+        options = tracing_opts.get()
+        if not options['changed']:
+            return
+
+        self.custom_potrace = parsers.conversion(options, 'potrace')
 
     def init_gui(self):
         """ Initializes the GUI and all the widgets
@@ -185,6 +220,8 @@ class Main(ttk.Frame):
         # ------------------------- #
 
         # ---- 2D to 3D conversion widgets ---- #
+
+        # Bitmap Conversion
         self.conversion_frame = ttk.Frame(self.root, width=200, height=50)
         self.conversion_frame.grid(row=1, column=0, sticky='NW')
 
@@ -194,12 +231,26 @@ class Main(ttk.Frame):
         self.conversion_label = ttk.Label(self.conversion_frame, text='Bitmap Conversion', anchor=tkinter.W)
         self.conversion_label.grid(row=1, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
 
-        self.conversion_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.bit_conversion_options)
+        self.conversion_options_button = ttk.Button(self.conversion_frame, text='Options',
+                                                    command=self.bit_conversion_options, state=tkinter.DISABLED)
         self.conversion_options_button.grid(row=2, padx=5, pady=5, sticky=tkinter.W)
         self.conversion_map_type = '.bmp'
 
-        self.conversion_start = ttk.Button(self.conversion_frame, text='Start', command=self.convert_to_bitmap)
+        self.conversion_start = ttk.Button(self.conversion_frame, text='Start', command=self.convert_to_bitmap,
+                                           state=tkinter.DISABLED)
         self.conversion_start.grid(row=2, column=1, padx=5, pady=5)
+
+        # Tracing
+        self.tracing_label = ttk.Label(self.conversion_frame, text='Bitmap Tracing', anchor=tkinter.W)
+        self.tracing_label.grid(row=3, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
+
+        self.tracing_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.tracing_options,
+                                                 state=tkinter.DISABLED)
+        self.tracing_options_button.grid(row=4, padx=5, pady=5, sticky=tkinter.W)
+
+        self.tracing_start = ttk.Button(self.conversion_frame, text='Start', command=self.potrace_trace,
+                                        state=tkinter.DISABLED)
+        self.tracing_start.grid(row=4, column=1, padx=5, pady=5)
 
         #self.conversion_radios = dict()
 
