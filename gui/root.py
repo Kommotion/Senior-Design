@@ -31,18 +31,38 @@ class Main(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         self.file_path = os.path.dirname(os.path.realpath(__file__))
+        self.root = parent
+
         self.file = None
         self.conversion_image = None
         self.conversion_map_type = None
         self.custom_imagemagick = None
         self.custom_potrace = None
-        self.root = parent
 
         self.objects_path = os.path.join(self.file_path, 'objects')
         if not os.path.exists(self.objects_path):
             os.makedirs(self.objects_path)
 
         self.init_gui()
+
+    def _soft_restart(self):
+        """ Soft restart of the program
+
+        This is done by setting the variables to None and disabling widgets
+        """
+        self.file = None
+        self.conversion_image = None
+        self.conversion_map_type = None
+        self.custom_imagemagick = None
+        self.custom_potrace = None
+
+        self.tracing_options_button.config(state='disabled')
+        self.blender_options_button.config(state='disabled')
+        self.conversion_options_button.config(state='disabled')
+
+        self.tracing_start.config(state='disabled')
+        self.conversion_start.config(state='disabled')
+        self.blender_start.config(state='disabled')
 
     def _quit(self):
         """ Terminates the program """
@@ -100,7 +120,8 @@ class Main(ttk.Frame):
 
         if file_type not in constants.ACCEPTABLE_FILETYPES:
             messagebox.showerror('Error', 'Wrong Filetype!\n\nAcceptable types: stl, jpg, png')
-            self.disable_widgets()
+            self._soft_restart()
+            return
 
         # Enable the next step
         self.conversion_options_button.config(state='normal')
@@ -136,6 +157,8 @@ class Main(ttk.Frame):
             return
 
         self.file = file_out
+        self.blender_options_button.config(state='normal')
+        self.blender_start.config(state='normal')
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
@@ -163,6 +186,13 @@ class Main(ttk.Frame):
             return
 
         self.custom_potrace = parsers.conversion(options, 'potrace')
+
+    def blender_options(self):
+        """ Brings up the blender menu options for STL conversion
+
+        Parses the results and readies for blender conversion
+        """
+        pass
 
     def init_gui(self):
         """ Initializes the GUI and all the widgets
@@ -251,6 +281,18 @@ class Main(ttk.Frame):
         self.tracing_start = ttk.Button(self.conversion_frame, text='Start', command=self.potrace_trace,
                                         state=tkinter.DISABLED)
         self.tracing_start.grid(row=4, column=1, padx=5, pady=5)
+
+        # STL conversion
+        self.blender_label = ttk.Label(self.conversion_frame, text='STL conversion', anchor=tkinter.W)
+        self.blender_label.grid(row=5, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
+
+        self.blender_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.tracing_options,
+                                                  state=tkinter.DISABLED)
+        self.blender_options_button.grid(row=6, padx=5, pady=5, sticky=tkinter.W)
+
+        self.blender_start = ttk.Button(self.conversion_frame, text='Start', command=self.potrace_trace,
+                                         state=tkinter.DISABLED)
+        self.blender_start.grid(row=6, column=1, padx=5, pady=5)
 
         #self.conversion_radios = dict()
 
