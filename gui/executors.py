@@ -65,7 +65,7 @@ def exec_potrace(filepath, line='', filename=None):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = '{} {} -o {} --flat {}'.format(potrace_path, filename, file_out, line)
+    command = '{} -s {} -o {} --flat {}'.format(potrace_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
