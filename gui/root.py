@@ -64,6 +64,14 @@ class Main(ttk.Frame):
         self.conversion_start.config(state='disabled')
         self.blender_start.config(state='disabled')
 
+        self.conversion_result_var.set('NOT RUN')
+        self.tracing_result_var.set('NOT RUN')
+        self.blender_result_var.set('NOT RUN')
+
+        self.conversion_result_label.config(foreground='gray5')
+        self.tracing_result_label.config(foreground='gray5')
+        self.blender_result_label.config(foreground='gray5')
+
     def _quit(self):
         """ Terminates the program """
         quit()
@@ -138,11 +146,16 @@ class Main(ttk.Frame):
 
         if not result:
             messagebox.showerror('Error', 'There was an error in conversion process!')
+            self.conversion_result_var.set('FAILED')
+            self.conversion_result_label.config(foreground='red2')
             return
 
         self.file = file_out
         self.tracing_options_button.config(state='normal')
         self.tracing_start.config(state='normal')
+
+        self.conversion_result_var.set('PASSED')
+        self.conversion_result_label.config(foreground='green4')
 
     def potrace_trace(self):
         """ Uses potrace to trace the bitmap and output to SVG file """
@@ -154,11 +167,16 @@ class Main(ttk.Frame):
 
         if not result:
             messagebox.showerror('Error', 'There was an error in tracing process!')
+            self.tracing_result_var.set('FAILED')
+            self.tracing_result_label.config('red2')
             return
 
         self.file = file_out
         self.blender_options_button.config(state='normal')
         self.blender_start.config(state='normal')
+
+        self.tracing_result_var.set('PASSED')
+        self.tracing_result_label.config(foreground='green4')
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
@@ -294,12 +312,37 @@ class Main(ttk.Frame):
                                          state=tkinter.DISABLED)
         self.blender_start.grid(row=6, column=1, padx=5, pady=5)
 
-        #self.conversion_radios = dict()
+        self.separator_1 = ttk.Separator(self.conversion_frame, orient=tkinter.HORIZONTAL)
+        self.separator_1.grid(row=7, padx=5, pady=15, sticky='we', columnspan=10)
 
-        # for text, mode in constants.CONVERSION_MODES:
-        #     button = ttk.Radiobutton(text=text, variable=self.conversion_map_type, value=mode)
-        #     button.grid(sticky=tkinter.W, padx=5)
-        #     self.conversion_radios[text] = button
+        self.conversion_frame.grid_columnconfigure(5, minsize=40)
+        self.conversion_frame.grid_columnconfigure(2, minsize=65)
+
+        # Conversion result widgets
+        results_widgets = list()
+
+        self.conversion_result_var = tkinter.StringVar()
+        self.conversion_result_label = ttk.Label(self.conversion_frame, textvariable=self.conversion_result_var, anchor=tkinter.CENTER,
+                                                 background='gray60', width=20)
+        results_widgets.append(self.conversion_result_label)
+        self.conversion_result_var.set('NOT RUN')
+
+        self.tracing_result_var = tkinter.StringVar()
+        self.tracing_result_label = ttk.Label(self.conversion_frame, textvariable=self.tracing_result_var, anchor=tkinter.CENTER,
+                                              background='gray60', width=20)
+        results_widgets.append(self.tracing_result_label)
+        self.tracing_result_var.set('NOT RUN')
+
+        self.blender_result_var = tkinter.StringVar()
+        self.blender_result_label = ttk.Label(self.conversion_frame, textvariable=self.blender_result_var, anchor=tkinter.CENTER,
+                                              background='gray60', width=20)
+        results_widgets.append(self.blender_result_label)
+        self.blender_result_var.set('NOT RUN')
+
+        row = 2
+        for label in results_widgets:
+            label.grid(row=row, column=3, padx=5, pady=5)
+            row += 2
 
         for child in self.winfo_children():
             child.grid_configure()
