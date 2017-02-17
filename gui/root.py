@@ -52,7 +52,7 @@ class Main(ttk.Frame):
         """
         self.file = None
         self.conversion_image = None
-        self.conversion_map_type = None
+        self.conversion_map_type = '.bmp'
         self.custom_imagemagick = None
         self.custom_potrace = None
 
@@ -117,6 +117,7 @@ class Main(ttk.Frame):
         if not file:
             return
 
+        self._soft_restart()
         file = os.path.normpath(file)
         self.file = file
         self.file_label.set(file)
@@ -315,7 +316,7 @@ class Main(ttk.Frame):
         self.separator_1 = ttk.Separator(self.conversion_frame, orient=tkinter.HORIZONTAL)
         self.separator_1.grid(row=7, padx=5, pady=15, sticky='we', columnspan=10)
 
-        self.conversion_frame.grid_columnconfigure(5, minsize=40)
+        self.conversion_frame.grid_columnconfigure(5, minsize=30)
         self.conversion_frame.grid_columnconfigure(2, minsize=65)
 
         # Conversion result widgets
