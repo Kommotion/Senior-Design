@@ -179,6 +179,12 @@ class Main(ttk.Frame):
         self.tracing_result_var.set('PASSED')
         self.tracing_result_label.config(foreground='green4')
 
+    def slicing_start(self):
+        """ Executes the slicer for the given 3D object
+        
+        This prepares and calls the executor from executors module
+        """
+
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
 
@@ -213,6 +219,12 @@ class Main(ttk.Frame):
         """
         pass
 
+    def slicing_options(self):
+        """  Brings up options menu for 3D slicing
+
+        Parses the results for when running the Freecad extrusion and STL output script
+        """
+
     def init_gui(self):
         """ Initializes the GUI and all the widgets
 
@@ -225,7 +237,7 @@ class Main(ttk.Frame):
         self.root.option_add('*tearOff', 'FALSE')
 
         # layout all of the main containers
-        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_rowconfigure(2, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
         # ------- menubar ------- #
@@ -271,7 +283,7 @@ class Main(ttk.Frame):
         # ---- 2D to 3D conversion widgets ---- #
 
         # Bitmap Conversion
-        self.conversion_frame = ttk.Frame(self.root, width=200, height=50)
+        self.conversion_frame = ttk.Frame(self.root, width=200, height=10)
         self.conversion_frame.grid(row=1, column=0, sticky='NW')
 
         self.step_2_label = ttk.Label(self.conversion_frame, text='Step 2:', anchor=tkinter.W)
@@ -314,7 +326,7 @@ class Main(ttk.Frame):
         self.blender_start.grid(row=6, column=1, padx=5, pady=5)
 
         self.separator_1 = ttk.Separator(self.conversion_frame, orient=tkinter.HORIZONTAL)
-        self.separator_1.grid(row=7, padx=5, pady=15, sticky='we', columnspan=10)
+        self.separator_1.grid(row=7, padx=5, pady=5, sticky='we', columnspan=10)
 
         self.conversion_frame.grid_columnconfigure(5, minsize=30)
         self.conversion_frame.grid_columnconfigure(2, minsize=65)
@@ -344,6 +356,24 @@ class Main(ttk.Frame):
         for label in results_widgets:
             label.grid(row=row, column=3, padx=5, pady=5)
             row += 2
+
+        # --- STL Slicing ----
+        self.slicing_frame = ttk.Frame(self.root, width=200, height=15)
+        self.slicing_frame.grid(row=2, sticky='NW', column=0)
+
+        self.slicing_label = ttk.Label(self.slicing_frame, text='Step 3:')
+        self.slicing_label.grid(padx=5, pady=5, sticky=tkinter.NW)
+
+        self.slicing_label_opts = ttk.Label(self.slicing_frame, text='Slicing')
+        self.slicing_label_opts.grid(padx=5, pady=5, sticky=tkinter.NW, row=1)
+
+        self.slicing_options_button = ttk.Button(self.slicing_frame, text='Options', command=self.slicing_options,
+                                                 state=tkinter.DISABLED)
+        self.slicing_options_button.grid(row=2,padx=5, pady=5, sticky=tkinter.NW)
+
+        self.slicing_start_button = ttk.Button(self.slicing_frame, text='Start', command=self.slicing_start,
+                                               state=tkinter.DISABLED)
+        self.slicing_start_button.grid(row=2, column=1, padx=5, pady=5)
 
         for child in self.winfo_children():
             child.grid_configure()
