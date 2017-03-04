@@ -59,10 +59,12 @@ class Main(ttk.Frame):
         self.tracing_options_button.config(state='disabled')
         self.blender_options_button.config(state='disabled')
         self.conversion_options_button.config(state='disabled')
+        self.slicing_options_button.config(state='disabled')
 
         self.tracing_start.config(state='disabled')
         self.conversion_start.config(state='disabled')
         self.blender_start.config(state='disabled')
+        self.slicing_start_button.config(state='disabled')
 
         self.conversion_result_var.set('NOT RUN')
         self.tracing_result_var.set('NOT RUN')
@@ -181,7 +183,7 @@ class Main(ttk.Frame):
 
     def slicing_start(self):
         """ Executes the slicer for the given 3D object
-        
+
         This prepares and calls the executor from executors module
         """
 
@@ -217,6 +219,7 @@ class Main(ttk.Frame):
 
         Parses the results and readies for blender conversion
         """
+        # TODO
         pass
 
     def slicing_options(self):
@@ -224,6 +227,26 @@ class Main(ttk.Frame):
 
         Parses the results for when running the Freecad extrusion and STL output script
         """
+        # TODO
+        pass
+
+    def etching_ready(self):
+        """ Calls the etching ready module to prepare for etching
+
+        The module tries to establish connections to both the laser and the MCU. Switches
+        the ready state to READY if the connections are correctly established,
+        otherwise changes the state to not ready and provides error.
+        """
+        # TODO
+        pass
+
+    def etching_start(self):
+        """ Begins the etching process
+
+
+        """
+        # TODO
+        pass
 
     def init_gui(self):
         """ Initializes the GUI and all the widgets
@@ -238,7 +261,7 @@ class Main(ttk.Frame):
 
         # layout all of the main containers
         self.root.grid_rowconfigure(2, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
 
         # ------- menubar ------- #
         self.menubar = tkinter.Menu(self.root)
@@ -374,6 +397,24 @@ class Main(ttk.Frame):
         self.slicing_start_button = ttk.Button(self.slicing_frame, text='Start', command=self.slicing_start,
                                                state=tkinter.DISABLED)
         self.slicing_start_button.grid(row=2, column=1, padx=5, pady=5)
+
+        # --- Etching widgets ----
+        self.etching_frame = ttk.Frame(self.root, width=200, height=15)
+        self.etching_frame.grid(row=2, column=1, sticky='NW')
+
+        self.etching_label = ttk.Label(self.etching_frame, text='Step 4:')
+        self.etching_label.grid(padx=5, pady=5, sticky='W')
+
+        self.etching_label_desc = ttk.Label(self.etching_frame, text='Laser Etching')
+        self.etching_label_desc.grid(row=1, padx=5, pady=5, sticky='W')
+
+        self.test_connections_button = ttk.Button(self.etching_frame, text='Test Connections', command=self.etching_ready,
+                                                  state=tkinter.DISABLED)
+        self.test_connections_button.grid(row=3, padx=5, pady=5)
+
+        self.etching_start = ttk.Button(self.etching_frame, text='Start', width=15, command=self.etching_start,
+                                        state=tkinter.DISABLED)
+        self.etching_start.grid(row=4, padx=5, pady=5)
 
         for child in self.winfo_children():
             child.grid_configure()
