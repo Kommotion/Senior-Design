@@ -134,9 +134,13 @@ class Main(ttk.Frame):
             self._soft_restart()
             return
 
-        # Enable the next step
-        self.conversion_options_button.config(state='normal')
-        self.conversion_start.config(state='normal')
+        # Enable the next step, Slicing if STL file
+        if file_type == 'stl':
+            self.slicing_options_button.config(state='normal')
+            self.slicing_start_button.config(state='normal')
+        else:
+            self.conversion_options_button.config(state='normal')
+            self.conversion_start.config(state='normal')
 
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
@@ -226,6 +230,16 @@ class Main(ttk.Frame):
         """  Brings up options menu for 3D slicing
 
         Parses the results for when running the Freecad extrusion and STL output script
+        """
+        # TODO
+        pass
+
+    def choose_connections(self):
+        """ Calls the module that uses pyserial to show all COM ports
+
+        The user is able to choose their desired devices from the COM ports
+        listed by pyserial. There are two available COM ports, for the laser and
+        for the MCU. It is up to the user to decide the correct ones.
         """
         # TODO
         pass
@@ -387,7 +401,7 @@ class Main(ttk.Frame):
         self.slicing_label = ttk.Label(self.slicing_frame, text='Step 3:')
         self.slicing_label.grid(padx=5, pady=5, sticky=tkinter.NW)
 
-        self.slicing_label_opts = ttk.Label(self.slicing_frame, text='Slicing')
+        self.slicing_label_opts = ttk.Label(self.slicing_frame, text='3D Slicing')
         self.slicing_label_opts.grid(padx=5, pady=5, sticky=tkinter.NW, row=1)
 
         self.slicing_options_button = ttk.Button(self.slicing_frame, text='Options', command=self.slicing_options,
@@ -408,13 +422,17 @@ class Main(ttk.Frame):
         self.etching_label_desc = ttk.Label(self.etching_frame, text='Laser Etching')
         self.etching_label_desc.grid(row=1, padx=5, pady=5, sticky='W')
 
-        self.test_connections_button = ttk.Button(self.etching_frame, text='Test Connections', command=self.etching_ready,
-                                                  state=tkinter.DISABLED)
-        self.test_connections_button.grid(row=3, padx=5, pady=5)
+        self.choose_connections_button = ttk.Button(self.etching_frame, text='Choose connections', command=self.choose_connections,
+                                             state=tkinter.DISABLED, width=20)
+        self.choose_connections_button.grid(row=3, padx=5, pady=5)
 
-        self.etching_start = ttk.Button(self.etching_frame, text='Start', width=15, command=self.etching_start,
+        self.test_connections_button = ttk.Button(self.etching_frame, text='Test Connections', command=self.etching_ready,
+                                                  state=tkinter.DISABLED, width=20)
+        self.test_connections_button.grid(row=3, column=1, padx=5, pady=5)
+
+        self.etching_start = ttk.Button(self.etching_frame, text='Start', width=20, command=self.etching_start,
                                         state=tkinter.DISABLED)
-        self.etching_start.grid(row=4, padx=5, pady=5)
+        self.etching_start.grid(row=4, column=1, padx=5, pady=5, sticky='W')
 
         for child in self.winfo_children():
             child.grid_configure()
