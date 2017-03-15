@@ -18,6 +18,7 @@ import os
 import imghdr
 import executors
 from conversion import ConversionOptions
+from conversion import StlOptions
 from tracing import TracingOptions
 from tkinter import ttk
 from tkinter import filedialog
@@ -38,6 +39,7 @@ class Main(ttk.Frame):
         self.conversion_map_type = None
         self.custom_imagemagick = None
         self.custom_potrace = None
+        self.extrusion_depth = 2.0
 
         self.objects_path = os.path.join(self.file_path, 'objects')
         if not os.path.exists(self.objects_path):
@@ -55,24 +57,25 @@ class Main(ttk.Frame):
         self.conversion_map_type = '.bmp'
         self.custom_imagemagick = None
         self.custom_potrace = None
+        self.extrusion_depth = 2.0
 
         self.tracing_options_button.config(state='disabled')
-        self.blender_options_button.config(state='disabled')
+        self.stl_options_button.config(state='disabled')
         self.conversion_options_button.config(state='disabled')
         self.slicing_options_button.config(state='disabled')
 
         self.tracing_start.config(state='disabled')
         self.conversion_start.config(state='disabled')
-        self.blender_start.config(state='disabled')
+        self.stl_start.config(state='disabled')
         self.slicing_start_button.config(state='disabled')
 
         self.conversion_result_var.set('NOT RUN')
         self.tracing_result_var.set('NOT RUN')
-        self.blender_result_var.set('NOT RUN')
+        self.stl_result_var.set('NOT RUN')
 
         self.conversion_result_label.config(foreground='gray5')
         self.tracing_result_label.config(foreground='gray5')
-        self.blender_result_label.config(foreground='gray5')
+        self.stl_result_label.config(foreground='gray5')
 
     def _quit(self):
         """ Terminates the program """
@@ -121,6 +124,7 @@ class Main(ttk.Frame):
 
         self._soft_restart()
         file = os.path.normpath(file)
+        self.file_path = file
         self.file = file
         self.file_label.set(file)
         file_type = imghdr.what(self.file)
@@ -179,8 +183,8 @@ class Main(ttk.Frame):
             return
 
         self.file = file_out
-        self.blender_options_button.config(state='normal')
-        self.blender_start.config(state='normal')
+        self.stl_options_button.config(state='normal')
+        self.stl_start.config(state='normal')
 
         self.tracing_result_var.set('PASSED')
         self.tracing_result_label.config(foreground='green4')
@@ -218,13 +222,18 @@ class Main(ttk.Frame):
 
         self.custom_potrace = parsers.conversion(options, 'potrace')
 
-    def blender_options(self):
-        """ Brings up the blender menu options for STL conversion
+    def stl_options(self):
+        """ Brings up the menu options for STL conversion
 
-        Parses the results and readies for blender conversion
+        Parses the results and readies for STL conversion
         """
-        # TODO
-        pass
+        stl_opts = StlOptions(self.root, self.extrusion_depth)
+        self.wait_window(stl_opts.top)
+        options = stl_opts.get()
+        if not options['changed']:
+            return
+
+        self.extrusion_depth = float(parsers.conversion(options, 'extrusion'))
 
     def slicing_options(self):
         """  Brings up options menu for 3D slicing
@@ -351,16 +360,16 @@ class Main(ttk.Frame):
         self.tracing_start.grid(row=4, column=1, padx=5, pady=5)
 
         # STL conversion
-        self.blender_label = ttk.Label(self.conversion_frame, text='STL conversion', anchor=tkinter.W)
-        self.blender_label.grid(row=5, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
+        self.stl_label = ttk.Label(self.conversion_frame, text='STL conversion', anchor=tkinter.W)
+        self.stl_label.grid(row=5, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
 
-        self.blender_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.tracing_options,
-                                                  state=tkinter.DISABLED)
-        self.blender_options_button.grid(row=6, padx=5, pady=5, sticky=tkinter.W)
+        self.stl_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.stl_options,
+                                                  state=tkinter.NORMAL)
+        self.stl_options_button.grid(row=6, padx=5, pady=5, sticky=tkinter.W)
 
-        self.blender_start = ttk.Button(self.conversion_frame, text='Start', command=self.potrace_trace,
+        self.stl_start = ttk.Button(self.conversion_frame, text='Start', command=self.potrace_trace,
                                          state=tkinter.DISABLED)
-        self.blender_start.grid(row=6, column=1, padx=5, pady=5)
+        self.stl_start.grid(row=6, column=1, padx=5, pady=5)
 
         self.separator_1 = ttk.Separator(self.conversion_frame, orient=tkinter.HORIZONTAL)
         self.separator_1.grid(row=7, padx=5, pady=5, sticky='we', columnspan=10)
@@ -383,11 +392,11 @@ class Main(ttk.Frame):
         results_widgets.append(self.tracing_result_label)
         self.tracing_result_var.set('NOT RUN')
 
-        self.blender_result_var = tkinter.StringVar()
-        self.blender_result_label = ttk.Label(self.conversion_frame, textvariable=self.blender_result_var, anchor=tkinter.CENTER,
+        self.stl_result_var = tkinter.StringVar()
+        self.stl_result_label = ttk.Label(self.conversion_frame, textvariable=self.stl_result_var, anchor=tkinter.CENTER,
                                               background='gray60', width=20)
-        results_widgets.append(self.blender_result_label)
-        self.blender_result_var.set('NOT RUN')
+        results_widgets.append(self.stl_result_label)
+        self.stl_result_var.set('NOT RUN')
 
         row = 2
         for label in results_widgets:
