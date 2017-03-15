@@ -16,11 +16,14 @@
 import tkinter
 import os
 from tkinter import ttk
+from tkinter import messagebox
 from utils import constants
 from utils import calculators
 
 
 class ConversionOptions:
+    """ Class for the Bitmap conversion options """
+
     def __init__(self, parent, conversion_type):
         self.top = tkinter.Toplevel(parent)
         self._file_path = os.path.dirname(os.path.realpath(__file__))
@@ -83,3 +86,72 @@ class ConversionOptions:
                 'need to specify input and output files.'
         self.warning_label = ttk.Label(self.top, text=label, wraplength=300, justify='left')
         self.warning_label.grid(row=2, column=1, rowspan=3)
+
+
+class StlOptions:
+    """ Class for STL conversion options """
+
+    def __init__(self, parent, extrusion_depth):
+        self.top = tkinter.Toplevel(parent)
+        self._file_path = os.path.dirname(os.path.realpath(__file__))
+        self._options = dict()
+        self._options['changed'] = False
+        self.extrusion_depth = tkinter.StringVar()
+        self.extrusion_depth.set(extrusion_depth)
+        self._init_gui()
+
+    def get(self):
+        """ Returns the options """
+        return self._options
+
+    def _check_boundaries(self):
+        """ Checks to make sure that the given extrusion depth is within the boundaries
+
+        The current boundaries at 1 and 5
+        """
+        depth = self.extrusion_depth.get()
+
+        try:
+            depth = float(depth)
+        except ValueError:
+            return False
+
+        return True if 1 <= depth <= 5 else False
+
+    def _save_options(self):
+        """ Sets all the options and saves into a dict """
+        if not self._check_boundaries():
+            messagebox.showerror('Error', 'Extrusion must be a number between 1 and 5')
+            return
+
+        self._options['changed'] = True
+        self._options['extrusion'] = self.extrusion_depth
+        self._quit()
+
+    def _quit(self):
+        """ Destroys this Toplevel widget """
+        self.top.destroy()
+
+    def _init_gui(self):
+        """ Initializes all the widgets """
+        self.top.grab_set()
+        geo = calculators.center(self.top.master, 200, 100)
+        self.top.geometry(geo)
+        self.top.title('STL')
+        self.top.resizable(height=False, width=False)
+        self.top.wm_iconbitmap(self._file_path + r'\ucf.ico')
+        self.top.grid_columnconfigure(1, weight=1)
+
+        label = 'Extrusion Depth:'
+        self.output_label = ttk.Label(self.top, text=label, anchor=tkinter.W)
+        self.output_label.grid(padx=5, pady=5, sticky=tkinter.W, columnspan=2)
+
+        self.custom_entry = ttk.Entry(self.top, textvariable=self.extrusion_depth, width=30)
+        self.custom_entry.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky=tkinter.W)
+
+        self.save_button = ttk.Button(self.top, text='Save', width=15, command=self._save_options)
+        self.save_button.grid(row=2, padx=5, pady=5, sticky=tkinter.W)
+
+        self.cancel_button = ttk.Button(self.top, text='Cancel', width=15, command=self._quit)
+        self.cancel_button.grid(row=2, column=1, padx=5, pady=5, sticky=tkinter.W)
+
