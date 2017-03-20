@@ -165,6 +165,7 @@ class Main(ttk.Frame):
         self.tracing_options_button.config(state='normal')
         self.tracing_start.config(state='normal')
 
+        self.conversion_start.config(state='disabled')
         self.conversion_result_var.set('PASSED')
         self.conversion_result_label.config(foreground='green4')
 
@@ -186,8 +187,32 @@ class Main(ttk.Frame):
         self.stl_options_button.config(state='normal')
         self.stl_start.config(state='normal')
 
+        self.tracing_start.config(state='disabled')
         self.tracing_result_var.set('PASSED')
         self.tracing_result_label.config(foreground='green4')
+
+    def stl_convert(self):
+        """ Launches the SVG to STL conversion process """
+        options = dict()
+        options['extrusion'] = self.extrusion_depth
+        options['filename'] = self.file
+        options['filepath'] = self.objects_path
+        file_out, result = executors.exec_stl_conversion(**options)
+
+        if not result:
+            messagebox.showerror('Error', 'There was an error in the STL conversion process!')
+            self.stl_result_var.set('FAILED')
+            self.stl_result_label.config('red2')
+            return
+
+        self.file = file_out
+        self.slicing_options_button.config(state='normal')
+        self.slicing_start_button.config(state='normal')
+
+        self.stl_start.config(state='disabled')
+        self.stl_result_var.set('PASSED')
+        self.stl_result_label.config(foreground='green4')
+
 
     def slicing_start(self):
         """ Executes the slicer for the given 3D object
@@ -364,10 +389,10 @@ class Main(ttk.Frame):
         self.stl_label.grid(row=5, padx=5, pady=5, sticky=tkinter.W, columnspan=2)
 
         self.stl_options_button = ttk.Button(self.conversion_frame, text='Options', command=self.stl_options,
-                                                  state=tkinter.NORMAL)
+                                                  state=tkinter.DISABLED)
         self.stl_options_button.grid(row=6, padx=5, pady=5, sticky=tkinter.W)
 
-        self.stl_start = ttk.Button(self.conversion_frame, text='Start', command=self.potrace_trace,
+        self.stl_start = ttk.Button(self.conversion_frame, text='Start', command=self.stl_convert,
                                          state=tkinter.DISABLED)
         self.stl_start.grid(row=6, column=1, padx=5, pady=5)
 
