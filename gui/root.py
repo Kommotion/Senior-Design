@@ -194,9 +194,9 @@ class Main(ttk.Frame):
     def stl_convert(self):
         """ Launches the SVG to STL conversion process """
         options = dict()
-        options['extrusion'] = self.extrusion_depth
         options['filename'] = self.file
         options['filepath'] = self.objects_path
+        options['extrusion'] = self.extrusion_depth
         file_out, result = executors.exec_stl_conversion(**options)
 
         if not result:
