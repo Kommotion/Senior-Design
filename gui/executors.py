@@ -39,7 +39,7 @@ def exec_imagemagick(filepath, line='', filetype=None, filename=None):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = '{} {} {} {}'.format(convert_path, filename, file_out, line)
+    command = '{} {} -monochrome -negate {} {}'.format(convert_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
