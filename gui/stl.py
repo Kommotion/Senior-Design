@@ -92,4 +92,4 @@ if __name__ == "__main__":
     output_file = results.output
     extrusion = results.extrusion
 
-    main_conversion(input_file, output_file, extrusion)
+    main_conversion(input_file, output_file, float(extrusion))
