@@ -180,7 +180,7 @@ class Main(ttk.Frame):
         if not result:
             messagebox.showerror('Error', 'There was an error in tracing process!')
             self.tracing_result_var.set('FAILED')
-            self.tracing_result_label.config('red2')
+            self.tracing_result_label.config(foreground='red2')
             return
 
         self.file = file_out
@@ -197,12 +197,12 @@ class Main(ttk.Frame):
         options['filename'] = self.file
         options['filepath'] = self.objects_path
         options['extrusion'] = self.extrusion_depth
-        file_out, result = executors.exec_stl_conversion(**options)
+        file_out, result = executors.stl_conversion(self.root, **options)
 
         if not result:
             messagebox.showerror('Error', 'There was an error in the STL conversion process!')
             self.stl_result_var.set('FAILED')
-            self.stl_result_label.config('red2')
+            self.stl_result_label.config(foreground='red2')
             return
 
         self.file = file_out
