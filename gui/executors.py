@@ -17,6 +17,7 @@
 import subprocess
 import os
 from utils import parsers
+from tkinter import messagebox
 
 
 def exec_imagemagick(filepath, line='', filetype=None, filename=None):
@@ -39,8 +40,7 @@ def exec_imagemagick(filepath, line='', filetype=None, filename=None):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = '{} {} {} {}'.format(convert_path, filename, file_out, line)
-    print(command)
+    command = '"{}" "{}" -monochrome -negate "{}" {}'.format(convert_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
@@ -66,12 +66,12 @@ def exec_potrace(filepath, line='', filename=None):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = '{} -s {} -o {} --flat {}'.format(potrace_path, filename, file_out, line)
+    command = '"{}" -s "{}" -o "{}" --flat {}'.format(potrace_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
 
-def stl_conversion(filename, filepath, extrusion):
+def stl_conversion(root, filename, filepath, extrusion):
     """ Converts the SVG file to a STL file by using the FreeCad script
 
     :return:  True or False, depending on pass
@@ -85,11 +85,9 @@ def stl_conversion(filename, filepath, extrusion):
 
     path = os.path.dirname(os.path.realpath(__file__))
     script = '{}\\stl.py'.format(path)
-    print(script)
 
-    command = 'python2 {} -i {} -o {} -e {}'.format(script, filename, file_out, extrusion)
-    print(command)
-    result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    print(result.check_returncode())
+    command = 'python2 "{}" -i "{}" -o "{}" -e {}'.format(script, filename, file_out, extrusion)
+    messagebox.showinfo('Caution', 'This process may take a few minutes to run.\nPress OK to continue')
+    result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, shell=True)
 
     return file_out, os.path.isfile(file_out)
