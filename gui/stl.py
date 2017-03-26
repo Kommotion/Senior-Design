@@ -37,31 +37,10 @@ def main_conversion(input_file, output_file, extrusion):
 
         The function opens the SVG file in Freecad, extrudes all paths, and exports as an SVG file
     """
-    # FREECADPATH='/usr/lib/freecad/lib' # adapt this path to your system
-
-    # # choose your favorite test to check if you are running with FreeCAD GUI or traditional Python
-    # freecad_gui = True
-    # #if not(FREECADPATH in sys.path): # test based on PYTHONPATH
-    # if not("FreeCAD" in dir()):       # test based on loaded module
-    #     freecad_gui = False
-    # print("dbg102: freecad_gui:", freecad_gui)
-    #
-    # if not(freecad_gui):
-    #     print("dbg101: add FREECADPATH to sys.path")
-    #     sys.path.append(FREECADPATH)
-    #     import FreeCAD
-    #
-    # print("FreeCAD.Version:", FreeCAD.Version())
-    # #FreeCAD.Console.PrintMessage("Hello from PrintMessage!\n") # avoid using this method because it is not printed in the FreeCAD GUI
-    #
-    # import Part
-    # from FreeCAD import Base
-
     print("dbg111: start building the 3D part")
 
-    my_tmp_doc = FreeCAD.newDocument("doc_blabla") # you can create implicitly the document "doc_blabla" by using it!
-    #import importSVG
-    importSVG.insert(input_file,"doc_blabla")
+    my_tmp_doc = FreeCAD.newDocument("doc_blabla")  # you can create implicitly the document "doc_blabla" by using it!
+    importSVG.insert(input_file, "doc_blabla")
 
     # Extrusion of paths
     my_solids = []
@@ -76,7 +55,7 @@ def main_conversion(input_file, output_file, extrusion):
     # Exporting STL file
     # Part.show(my_compound) # works only with FreeCAD GUI, ignore otherwise
     my_compound.exportStl(output_file)
-    print("output stl file: %s"%(output_file))
+    print("output stl file: %s" % output_file)
     print("dbg999: end of script")
 
 
