@@ -39,7 +39,8 @@ def exec_imagemagick(filepath, line='', filetype=None, filename=None):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = '{} {} -monochrome -negate {} {}'.format(convert_path, filename, file_out, line)
+    command = '{} {} {} {}'.format(convert_path, filename, file_out, line)
+    print(command)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
@@ -82,7 +83,12 @@ def stl_conversion(filename, filepath, extrusion):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = 'python2 {} {} {}'.format(filename, file_out, extrusion)
+    path = os.path.dirname(os.path.realpath(__file__))
+    script = '{}\\stl.py'.format(path)
+    print(script)
+
+    command = 'python2 {} -i {} -o {} -e {}'.format(script, filename, file_out, extrusion)
+    print(command)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
     print(result.check_returncode())
 
