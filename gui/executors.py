@@ -69,3 +69,21 @@ def exec_potrace(filepath, line='', filename=None):
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
+
+def stl_conversion(filename, filepath, extrusion):
+    """ Converts the SVG file to a STL file by using the FreeCad script
+
+    :return:  True or False, depending on pass
+    """
+    name = filename.split('\\')
+    name = name[len(name)-1].split('.')[0]
+    file_out = os.path.join(filepath, '{}.stl'.format(name))
+
+    if os.path.isfile(file_out):
+        os.remove(file_out)
+
+    command = 'python2 {} {} {}'.format(filename, file_out, extrusion)
+    result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    print(result.check_returncode())
+
+    return file_out, os.path.isfile(file_out)
