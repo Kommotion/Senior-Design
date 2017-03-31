@@ -20,7 +20,7 @@ from utils import parsers
 from tkinter import messagebox
 
 
-def exec_imagemagick(filepath, line='', filetype=None, filename=None):
+def exec_imagemagick(filepath, negate, line='', filetype=None, filename=None):
     """ Executes a subprocess call that executes imagemagick's convert
 
     :returns True if passed, False if failed
@@ -40,7 +40,10 @@ def exec_imagemagick(filepath, line='', filetype=None, filename=None):
     if os.path.isfile(file_out):
         os.remove(file_out)
 
-    command = '"{}" "{}" -monochrome -negate "{}" {}'.format(convert_path, filename, file_out, line)
+    if negate:
+        command = '"{}" "{}" -monochrome -negate "{}" {}'.format(convert_path, filename, file_out, line)
+    else:
+        command = '"{}" "{}" -monochrome "{}" {}'.format(convert_path, filename, file_out, line)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)

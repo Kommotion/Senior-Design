@@ -24,7 +24,7 @@ from utils import calculators
 class ConversionOptions:
     """ Class for the Bitmap conversion options """
 
-    def __init__(self, parent, conversion_type):
+    def __init__(self, parent, conversion_type, negate):
         self.top = tkinter.Toplevel(parent)
         self._file_path = os.path.dirname(os.path.realpath(__file__))
         self._conversion_map_type = tkinter.StringVar()
@@ -33,6 +33,8 @@ class ConversionOptions:
         self._options = dict()
         self._options['changed'] = False
         self._custom_imagemagick = tkinter.StringVar()
+        self._negate = tkinter.BooleanVar()
+        self._negate.set(negate)
         self._init_gui()
 
     def get(self):
@@ -44,6 +46,7 @@ class ConversionOptions:
         self._options['changed'] = True
         self._options['filetype'] = self._conversion_map_type
         self._options['imagemagick'] = self._custom_imagemagick
+        self._options['negate'] = self._negate
         self._quit()
 
     def _quit(self):
@@ -53,7 +56,7 @@ class ConversionOptions:
     def _init_gui(self):
         """ Initializes all the widgets """
         self.top.grab_set()
-        geo = calculators.center(self.top.master, 425, 150)
+        geo = calculators.center(self.top.master, 425, 175)
         self.top.geometry(geo)
         self.top.title('Conversion Options')
         self.top.resizable(height=False, width=False)
@@ -72,13 +75,16 @@ class ConversionOptions:
             self._conversion_radios[text] = button
 
         self.save_button = ttk.Button(self.top, text='Save', command=self._save_options)
-        self.save_button.grid(row=5, padx=5, pady=5, sticky=tkinter.W)
+        self.save_button.grid(row=6, padx=5, pady=5, sticky=tkinter.W)
 
         self.cancel_button = ttk.Button(self.top, text='Cancel', command=self._quit)
-        self.cancel_button.grid(row=5, column=1, padx=5, pady=5, sticky=tkinter.E)
+        self.cancel_button.grid(row=6, column=1, padx=5, pady=5, sticky=tkinter.E)
 
         self.custom_entry = ttk.Entry(self.top, textvariable=self._custom_imagemagick, width=50)
         self.custom_entry.grid(row=1, column=1, columnspan=15, padx=5, sticky=tkinter.E)
+
+        self.negate_box = ttk.Checkbutton(self.top, text='Invert Image', variable=self._negate)
+        self.negate_box.grid(row=5, padx=5, pady=5, sticky=tkinter.W)
 
         label = 'Warning: Only change the command line option ' \
                 'if you know what you\'re doing. This adds on ' \

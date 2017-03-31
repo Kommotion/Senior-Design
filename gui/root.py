@@ -39,6 +39,7 @@ class Main(ttk.Frame):
         self.conversion_map_type = None
         self.custom_imagemagick = None
         self.custom_potrace = None
+        self.negate = True
         self.extrusion_depth = 2.0
 
         self.objects_path = os.path.join(self.file_path, 'objects')
@@ -57,6 +58,7 @@ class Main(ttk.Frame):
         self.conversion_map_type = '.bmp'
         self.custom_imagemagick = None
         self.custom_potrace = None
+        self.negate = True
         self.extrusion_depth = 2.0
 
         self.tracing_options_button.config(state='disabled')
@@ -153,6 +155,7 @@ class Main(ttk.Frame):
         options['filetype'] = self.conversion_map_type
         options['filename'] = self.file
         options['filepath'] = self.objects_path
+        options['negate'] = self.negate
         file_out, result = executors.exec_imagemagick(**options)
 
         if not result:
@@ -225,7 +228,7 @@ class Main(ttk.Frame):
 
         Parses the results and readies for imagemagick conversion subprocess call
         """
-        con_opts = ConversionOptions(self.root, self.conversion_map_type)
+        con_opts = ConversionOptions(self.root, self.conversion_map_type, self.negate)
         self.wait_window(con_opts.top)
         options = con_opts.get()
         if not options['changed']:
@@ -233,6 +236,7 @@ class Main(ttk.Frame):
 
         self.conversion_map_type = parsers.conversion(options, 'filetype')
         self.custom_imagemagick = parsers.conversion(options, 'imagemagick')
+        self.negate = parsers.conversion(options, 'negate')
 
     def tracing_options(self):
         """ Brings up the tracing menu for tracing
