@@ -6,6 +6,7 @@ ACCEPTABLE_FILETYPES = (
 )
 
 FILE_EXTENSIONS = (
+    ('Acceptable files', '*.jpg;*.png;*.bmp;*.stl'),
     ('JPG files', '*.jpg'),
     ('PNG files', '*.png'),
     ('BMP files', '*.bmp'),
