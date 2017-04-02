@@ -74,10 +74,12 @@ class Main(ttk.Frame):
         self.conversion_result_var.set('NOT RUN')
         self.tracing_result_var.set('NOT RUN')
         self.stl_result_var.set('NOT RUN')
+        self.slicing_result_var.set('NOT RUN')
 
         self.conversion_result_label.config(foreground='gray5')
         self.tracing_result_label.config(foreground='gray5')
         self.stl_result_label.config(foreground='gray5')
+        self.slicing_result_label.config(foreground='gray5')
 
     def _quit(self):
         """ Terminates the program """
@@ -216,12 +218,29 @@ class Main(ttk.Frame):
         self.stl_result_var.set('PASSED')
         self.stl_result_label.config(foreground='green4')
 
-
     def slicing_start(self):
         """ Executes the slicer for the given 3D object
 
         This prepares and calls the executor from executors module
         """
+        options = dict()
+        options['filename'] = self.file
+        options['filepath'] = self.objects_path
+        file_out, result = executors.execute_slic3r(**options)
+
+        if not result:
+            messagebox.showerror('Error', 'There was an error in the Slicing process!')
+            self.slicing_result_var.set('FAILED')
+            self.slicing_result_label.config(foreground='red2')
+            return
+
+        self.file = file_out
+        # self.slicing_options_button.config(state='normal')
+        # self.slicing_start_button.config(state='normal')
+
+        self.slicing_start_button.config(state='disabled')
+        self.slicing_result_var.set('PASSED')
+        self.slicing_result_label.config(foreground='green4')
 
     def bit_conversion_options(self):
         """ Brings up the conversion options menu for bitmap tracing
@@ -449,6 +468,14 @@ class Main(ttk.Frame):
         self.slicing_start_button = ttk.Button(self.slicing_frame, text='Start', command=self.slicing_start,
                                                state=tkinter.DISABLED)
         self.slicing_start_button.grid(row=2, column=1, padx=5, pady=5)
+
+        self.slicing_frame.grid_columnconfigure(2, minsize=65)
+
+        self.slicing_result_var = tkinter.StringVar()
+        self.slicing_result_label = ttk.Label(self.slicing_frame, textvariable=self.slicing_result_var, anchor=tkinter.CENTER,
+                                              background='gray60', width=20)
+        self.slicing_result_var.set('NOT RUN')
+        self.slicing_result_label.grid(row=2, column=3, padx=5, pady=5)
 
         # --- Etching widgets ----
         self.etching_frame = ttk.Frame(self.root, width=200, height=15)
