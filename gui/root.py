@@ -26,6 +26,7 @@ from tkinter import messagebox
 from utils import constants
 from utils import parsers
 from utils import calculators
+from PIL import Image, ImageTk
 
 
 class Main(ttk.Frame):
@@ -39,6 +40,7 @@ class Main(ttk.Frame):
         self.conversion_map_type = None
         self.custom_imagemagick = None
         self.custom_potrace = None
+        self.image = None
         self.negate = True
         self.extrusion_depth = 2.0
 
@@ -60,6 +62,10 @@ class Main(ttk.Frame):
         self.custom_potrace = None
         self.negate = True
         self.extrusion_depth = 2.0
+
+        self.canvas.delete(self.image)
+        self.image = None
+        self.canvas_button.lower(self.canvas)
 
         self.tracing_options_button.config(state='disabled')
         self.stl_options_button.config(state='disabled')
@@ -84,6 +90,20 @@ class Main(ttk.Frame):
     def _quit(self):
         """ Terminates the program """
         quit()
+
+    def _update_image(self):
+        """ Displays an image within the canvas """
+        try:
+            image = Image.open(self.file)
+        except Exception as e:
+            self.canvas.delete(self.image)
+            self.image = None
+            self.canvas_button.lift(self.canvas)
+            return
+
+        image = image.resize((250, 250), Image.ANTIALIAS)
+        self.image = ImageTk.PhotoImage(image)
+        self.canvas.create_image(150, 150, image=self.image)
 
     def show_copyrights(self):
         """ Shows copyright dialogues for all software included """
@@ -146,9 +166,14 @@ class Main(ttk.Frame):
         if file_type == 'stl':
             self.slicing_options_button.config(state='normal')
             self.slicing_start_button.config(state='normal')
+        #elif file_type == '.gcode':
+            #self.etching_start
         else:
             self.conversion_options_button.config(state='normal')
             self.conversion_start.config(state='normal')
+
+        self._update_image()
+
 
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
@@ -174,6 +199,8 @@ class Main(ttk.Frame):
         self.conversion_result_var.set('PASSED')
         self.conversion_result_label.config(foreground='green4')
 
+        self._update_image()
+
     def potrace_trace(self):
         """ Uses potrace to trace the bitmap and output to SVG file """
         options = dict()
@@ -196,6 +223,8 @@ class Main(ttk.Frame):
         self.tracing_result_var.set('PASSED')
         self.tracing_result_label.config(foreground='green4')
 
+        self._update_image()
+
     def stl_convert(self):
         """ Launches the SVG to STL conversion process """
         options = dict()
@@ -217,6 +246,8 @@ class Main(ttk.Frame):
         self.stl_start.config(state='disabled')
         self.stl_result_var.set('PASSED')
         self.stl_result_label.config(foreground='green4')
+
+        self._update_image()
 
     def slicing_start(self):
         """ Executes the slicer for the given 3D object
@@ -318,6 +349,10 @@ class Main(ttk.Frame):
         """
         # TODO
         pass
+
+    def open_file(self):
+        """ Opens the file using default for operating system """
+        os.startfile(self.file)
 
     def init_gui(self):
         """ Initializes the GUI and all the widgets
@@ -498,6 +533,20 @@ class Main(ttk.Frame):
         self.etching_start = ttk.Button(self.etching_frame, text='Start', width=20, command=self.etching_start,
                                         state=tkinter.DISABLED)
         self.etching_start.grid(row=4, column=1, padx=5, pady=5, sticky='W')
+
+        # --- Image preview ---
+        self.image_frame = ttk.Frame(self.root, width=200, height=15)
+        self.image_frame.grid(row=0, column=1, sticky='W', rowspan=2)
+
+        self.image_frame.grid_columnconfigure(0, minsize=60)
+        self.image_frame.grid_columnconfigure(1, weight=1)
+
+        self.canvas = tkinter.Canvas(self.image_frame, width=300, height=300, borderwidth=2, relief=tkinter.GROOVE)
+        self.canvas.grid(padx=5, pady=5, column=1)
+
+        self.canvas_button = ttk.Button(self.image_frame, text='Preview File', command=self.open_file, width=20)
+        self.canvas_button.place(x=155, y=150)
+        self.canvas_button.lower(self.canvas)
 
         for child in self.winfo_children():
             child.grid_configure()
