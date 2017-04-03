@@ -91,7 +91,15 @@ def stl_conversion(root, filename, filepath, extrusion):
 
     command = 'python2 "{}" -i "{}" -o "{}" -e {}'.format(script, filename, file_out, extrusion)
     messagebox.showinfo('Caution', 'This process may take a few minutes to run.\nPress OK to continue')
-    result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, shell=True)
+
+    # Terrible exception handling but there is a bug that occasionally occurs
+    # This bug has nothing to do with STL creation process and only with the
+    # STDOUT/STDERR handling so it can be safely ignored
+    try:
+        result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, shell=True)
+    except Exception as e:
+        print(e)
+        pass
 
     return file_out, os.path.isfile(file_out)
 
