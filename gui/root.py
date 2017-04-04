@@ -227,6 +227,7 @@ class Main(ttk.Frame):
 
     def stl_convert(self):
         """ Launches the SVG to STL conversion process """
+        self.stl_result_var.set('RUNNING')
         options = dict()
         options['filename'] = self.file
         options['filepath'] = self.objects_path
@@ -254,6 +255,7 @@ class Main(ttk.Frame):
 
         This prepares and calls the executor from executors module
         """
+        self.slicing_result_var.set('RUNNING')
         options = dict()
         options['filename'] = self.file
         options['filepath'] = self.objects_path
