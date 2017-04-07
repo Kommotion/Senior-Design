@@ -120,7 +120,6 @@ def execute_slic3r(filename, filepath):
     config = os.path.dirname(os.path.realpath(__file__)) + '\\config.ini'
 
     command = '"{}" --load "{}" "{}"'.format(slicer, config, filename)
-    print(command)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                             shell=True)
 
