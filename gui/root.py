@@ -17,6 +17,7 @@ import tkinter
 import os
 import imghdr
 import executors
+import serials
 from conversion import ConversionOptions
 from conversion import StlOptions
 from tracing import TracingOptions
@@ -26,6 +27,7 @@ from tkinter import messagebox
 from utils import constants
 from utils import parsers
 from utils import calculators
+from utils import point
 from PIL import Image, ImageTk
 
 
@@ -48,6 +50,16 @@ class Main(ttk.Frame):
         if not os.path.exists(self.objects_path):
             os.makedirs(self.objects_path)
 
+        self.x = tkinter.IntVar()
+        self.y = tkinter.IntVar()
+        self.z = tkinter.IntVar()
+        self.x.set(-1)
+        self.y.set(-1)
+        self.z.set(-1)
+        self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
+
+        self.device_path = None
+
         self.init_gui()
 
     def _soft_restart(self):
@@ -62,6 +74,7 @@ class Main(ttk.Frame):
         self.custom_potrace = None
         self.negate = True
         self.extrusion_depth = 2.0
+        self.device_path = None
 
         self.canvas.delete(self.image)
         self.image = None
@@ -86,6 +99,17 @@ class Main(ttk.Frame):
         self.tracing_result_label.config(foreground='gray5')
         self.stl_result_label.config(foreground='gray5')
         self.slicing_result_label.config(foreground='gray5')
+
+        self.current_x_entry.config(state='disabled')
+        self.current_y_entry.config(state='disabled')
+        self.current_z_entry.config(state='disabled')
+        self.test_connections_button.config(state='disabled')
+        self.etching_start.config(state='disabled')
+
+        self.x.set(-1)
+        self.y.set(-1)
+        self.z.set(-1)
+        self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
 
     def _quit(self):
         """ Terminates the program """
@@ -166,14 +190,13 @@ class Main(ttk.Frame):
         if file_type == 'stl':
             self.slicing_options_button.config(state='normal')
             self.slicing_start_button.config(state='normal')
-        #elif file_type == '.gcode':
-            #self.etching_start
+        elif file_type == 'gcode':
+            self.test_connections_button.config(state='normal')
         else:
             self.conversion_options_button.config(state='normal')
             self.conversion_start.config(state='normal')
 
         self._update_image()
-
 
     def convert_to_bitmap(self):
         """ Converts the image to bitmap image """
@@ -268,8 +291,10 @@ class Main(ttk.Frame):
             return
 
         self.file = file_out
-        # self.slicing_options_button.config(state='normal')
-        # self.slicing_start_button.config(state='normal')
+        self.current_x_entry.config(state='normal')
+        self.current_y_entry.config(state='normal')
+        self.current_z_entry.config(state='normal')
+        self.test_connections_button.config(state='normal')
 
         self.slicing_start_button.config(state='disabled')
         self.slicing_result_var.set('PASSED')
@@ -322,16 +347,7 @@ class Main(ttk.Frame):
         Parses the results for when running the Freecad extrusion and STL output script
         """
         # TODO
-        pass
-
-    def choose_connections(self):
-        """ Calls the module that uses pyserial to show all COM ports
-
-        The user is able to choose their desired devices from the COM ports
-        listed by pyserial. There are two available COM ports, for the laser and
-        for the MCU. It is up to the user to decide the correct ones.
-        """
-        # TODO
+        # Maybe not even needed
         pass
 
     def etching_ready(self):
@@ -341,16 +357,24 @@ class Main(ttk.Frame):
         the ready state to READY if the connections are correctly established,
         otherwise changes the state to not ready and provides error.
         """
-        # TODO
-        pass
+        result = serials.pre_test()
+
+        if result['result'] is False:
+            messagebox.showerror(title='Error', message=result['reason'])
+            return
+
+        self.device_path = result['device']
+        self.etching_start.configure(state='normal')
 
     def etching_start(self):
-        """ Begins the etching process
+        """ Begins the etching process """
+        result, reason = serials.full_test(self.file, self.device_path)
 
+        if result is False:
+            messagebox.showerror(title='Error', message=reason)
+            return
 
-        """
-        # TODO
-        pass
+        messagebox.showinfo(title='Success', message='Etching process complete!')
 
     def open_file(self):
         """ Opens the file using default for operating system """
@@ -522,19 +546,37 @@ class Main(ttk.Frame):
         self.etching_label.grid(padx=5, pady=5, sticky='W')
 
         self.etching_label_desc = ttk.Label(self.etching_frame, text='Laser Etching')
-        self.etching_label_desc.grid(row=1, padx=5, pady=5, sticky='W')
+        self.etching_label_desc.grid(row=1, padx=5, pady=5, sticky='W', columnspan=5)
 
-        self.choose_connections_button = ttk.Button(self.etching_frame, text='Choose connections', command=self.choose_connections,
-                                             state=tkinter.DISABLED, width=20)
-        self.choose_connections_button.grid(row=3, padx=5, pady=5)
+        #self.choose_connections_button = ttk.Button(self.etching_frame, text='Choose connections', command=self.choose_connections,
+        #                                     state=tkinter.DISABLED, width=20)
+        #self.choose_connections_button.grid(row=3, padx=5, pady=5)
+
+        self.current_position_label = ttk.Label(self.etching_frame, text='Current Coordinates of Stage:')
+        self.current_position_label.grid(row=3, padx=5, pady=5)
+
+        self.current_x_label = ttk.Label(self.etching_frame, text='X:')
+        self.current_y_label = ttk.Label(self.etching_frame, text='Y:')
+        self.current_z_label = ttk.Label(self.etching_frame, text='Z:')
+
+        self.current_x_entry = ttk.Entry(self.etching_frame, textvariable=self.x, width=4, state=tkinter.DISABLED)
+        self.current_y_entry = ttk.Entry(self.etching_frame, textvariable=self.y, width=4, state=tkinter.DISABLED)
+        self.current_z_entry = ttk.Entry(self.etching_frame, textvariable=self.z, width=4, state=tkinter.DISABLED)
+
+        self.current_x_label.grid(row=3, column=1)
+        self.current_x_entry.grid(row=3, column=2)
+        self.current_y_label.grid(row=3, column=3)
+        self.current_y_entry.grid(row=3, column=4)
+        self.current_z_label.grid(row=3, column=5)
+        self.current_z_entry.grid(row=3, column=6)
 
         self.test_connections_button = ttk.Button(self.etching_frame, text='Test Connections', command=self.etching_ready,
                                                   state=tkinter.DISABLED, width=20)
-        self.test_connections_button.grid(row=3, column=1, padx=5, pady=5)
+        self.test_connections_button.grid(row=4, padx=5, pady=10)
 
         self.etching_start = ttk.Button(self.etching_frame, text='Start', width=20, command=self.etching_start,
                                         state=tkinter.DISABLED)
-        self.etching_start.grid(row=4, column=1, padx=5, pady=5, sticky='W')
+        self.etching_start.grid(row=4, column=1, padx=5, pady=10, columnspan=5)
 
         # --- Image preview ---
         self.image_frame = ttk.Frame(self.root, width=200, height=15)
