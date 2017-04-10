@@ -62,12 +62,10 @@ def main_conversion(input_file, output_file, extrusion):
 def stl_scaling(input_file, output_file):
     """ Scales the stl file to the given dimensions """
     import Mesh
-    print(output_file)
-    mesh = Mesh.Mesh("{}".format(output_file))
+    mesh = Mesh.Mesh("{}".format(input_file))
     print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
 
     while any(length > 25.4 for length in (mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)):
-        print("Transforming")
         if mesh.BoundBox.XLength > 25.4 or mesh.BoundBox.YLength > 25.4:
             x_y_scale = .75
         else:
@@ -81,10 +79,9 @@ def stl_scaling(input_file, output_file):
         matrix = FreeCAD.Matrix()
         matrix.scale(x_y_scale, x_y_scale, z_scale)
         mesh.transform(matrix)
-        print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
 
     print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
-    mesh.write(output_file)
+    mesh.write(input_file)
 
 
 if __name__ == "__main__":

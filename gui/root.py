@@ -279,6 +279,10 @@ class Main(ttk.Frame):
         This prepares and calls the executor from executors module
         """
         self.slicing_result_var.set('RUNNING')
+
+        # Run the scaler before slicing
+        executors.execute_scale_stl(self.file, self.objects_path)
+
         options = dict()
         options['filename'] = self.file
         options['filepath'] = self.objects_path
