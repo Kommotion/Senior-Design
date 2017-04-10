@@ -59,16 +59,53 @@ def main_conversion(input_file, output_file, extrusion):
     print("dbg999: end of script")
 
 
+def stl_scaling(input_file, output_file):
+    """ Scales the stl file to the given dimensions """
+    import Mesh
+    print(output_file)
+    mesh = Mesh.Mesh("{}".format(output_file))
+    print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
+
+    while any(length > 25.4 for length in (mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)):
+        print("Transforming")
+        if mesh.BoundBox.XLength > 25.4 or mesh.BoundBox.YLength > 25.4:
+            x_y_scale = .75
+        else:
+            x_y_scale = 1
+
+        if mesh.BoundBox.ZLength > 25.4:
+            z_scale = .75
+        else:
+            z_scale = 1
+
+        matrix = FreeCAD.Matrix()
+        matrix.scale(x_y_scale, x_y_scale, z_scale)
+        mesh.transform(matrix)
+        print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
+
+    print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
+    mesh.write(output_file)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="STL Conversion")
     parser.add_argument('-i', '--input', help='The input file (Required)', required=True)
     parser.add_argument('-o', '--output', help='The output file (Required)', required=True)
-    parser.add_argument('-e', '--extrusion', help='The distance for extrusion (Required)', required=True)
+    parser.add_argument('-e', '--extrusion', help='The distance for extrusion (Required)', required=False)
+    parser.add_argument('-s', '--scale', help='True or False for scaling STL to fit platform. Default False', default=0)
+    # parser.add_argument('-x', help='The max X of etching')
+    # parser.add_argument('-y', help='The max Y of etching')
+    # parser.add_argument('-z', help='The max Z of etching')
 
     # There is no argument validation done, we assume the user put in correct args
     results = parser.parse_args()
     input_file = results.input
     output_file = results.output
     extrusion = results.extrusion
+    scale = int(results.scale)
 
-    main_conversion(input_file, output_file, float(extrusion))
+    # Scale argument
+    if scale == 1:
+        stl_scaling(input_file, output_file)
+    else:
+        main_conversion(input_file, output_file, float(extrusion))

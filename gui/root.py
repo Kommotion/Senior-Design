@@ -27,7 +27,7 @@ from tkinter import messagebox
 from utils import constants
 from utils import parsers
 from utils import calculators
-from utils import point
+#from utils import point
 from PIL import Image, ImageTk
 
 
@@ -56,7 +56,7 @@ class Main(ttk.Frame):
         self.x.set(-1)
         self.y.set(-1)
         self.z.set(-1)
-        self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
+        #self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
 
         self.device_path = None
 
@@ -109,7 +109,7 @@ class Main(ttk.Frame):
         self.x.set(-1)
         self.y.set(-1)
         self.z.set(-1)
-        self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
+        #self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
 
     def _quit(self):
         """ Terminates the program """
