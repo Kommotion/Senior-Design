@@ -119,7 +119,8 @@ def execute_slic3r(filename, filepath):
     slicer = parsers.get_from_config('slic3r_path', os.path.dirname(os.path.realpath(__file__)))
     config = os.path.dirname(os.path.realpath(__file__)) + '\\config.ini'
 
-    command = '"{}" --load "{}" "{}"'.format(slicer, config, filename)
+    command = '"{}" --load "{}" "{}" --print-center 12.7,12.7'.format(slicer, config, filename)
+    print(command)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                             shell=True)
 
