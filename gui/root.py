@@ -557,7 +557,7 @@ class Main(ttk.Frame):
         #self.choose_connections_button.grid(row=3, padx=5, pady=5)
 
         self.current_position_label = ttk.Label(self.etching_frame, text='Current Coordinates of Stage:')
-        self.current_position_label.grid(row=3, padx=5, pady=5)
+        # self.current_position_label.grid(row=3, padx=5, pady=5)
 
         self.current_x_label = ttk.Label(self.etching_frame, text='X:')
         self.current_y_label = ttk.Label(self.etching_frame, text='Y:')
@@ -567,12 +567,12 @@ class Main(ttk.Frame):
         self.current_y_entry = ttk.Entry(self.etching_frame, textvariable=self.y, width=4, state=tkinter.DISABLED)
         self.current_z_entry = ttk.Entry(self.etching_frame, textvariable=self.z, width=4, state=tkinter.DISABLED)
 
-        self.current_x_label.grid(row=3, column=1)
-        self.current_x_entry.grid(row=3, column=2)
-        self.current_y_label.grid(row=3, column=3)
-        self.current_y_entry.grid(row=3, column=4)
-        self.current_z_label.grid(row=3, column=5)
-        self.current_z_entry.grid(row=3, column=6)
+        # self.current_x_label.grid(row=3, column=1)
+        # self.current_x_entry.grid(row=3, column=2)
+        # self.current_y_label.grid(row=3, column=3)
+        # self.current_y_entry.grid(row=3, column=4)
+        # self.current_z_label.grid(row=3, column=5)
+        # self.current_z_entry.grid(row=3, column=6)
 
         self.test_connections_button = ttk.Button(self.etching_frame, text='Test Connections', command=self.etching_ready,
                                                   state=tkinter.DISABLED, width=20)

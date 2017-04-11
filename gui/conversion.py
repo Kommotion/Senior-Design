@@ -113,7 +113,7 @@ class StlOptions:
     def _check_boundaries(self):
         """ Checks to make sure that the given extrusion depth is within the boundaries
 
-        The current boundaries at 1 and 5
+        The current boundaries at 1 and 10
         """
         depth = self.extrusion_depth.get()
 
@@ -122,12 +122,12 @@ class StlOptions:
         except ValueError:
             return False
 
-        return True if 1 <= depth <= 5 else False
+        return True if 1 <= depth <= 10 else False
 
     def _save_options(self):
         """ Sets all the options and saves into a dict """
         if not self._check_boundaries():
-            messagebox.showerror('Error', 'Extrusion must be a number between 1 and 5')
+            messagebox.showerror('Error', 'Extrusion must be a number between 1 and 10')
             return
 
         self._options['changed'] = True
