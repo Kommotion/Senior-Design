@@ -1,6 +1,6 @@
 # Senior-Design
 ##
-### Dependencies:
+## Dependencies:
 
 Current Operating Systems:
 * Windows 10
@@ -19,7 +19,7 @@ External Programs:
 * Slic3r
 * Freecad
 
-### Installation
+## Installation
 
  Module Installation (Use pip from the command line):
 ```
@@ -44,7 +44,7 @@ Config File (Make sure to configure correctly):
 
 * Config.json file with file paths of the given files
 
-### Credits
+## Credits
 
 Laser Plasma Art System developed by a team of four senior student in Senior Design at the University of Central Florida:
 * Nicolas Ramirez
@@ -66,7 +66,7 @@ Software Resources
 * ImageMagick
 * Potrace
 
-### License
+## License
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
