@@ -109,6 +109,7 @@ def start_stream(gcode_file, device_file, quiet=False, settings=False):
     time.sleep(2)
     s.flushInput()
 
+    laser_started = False
     # Stream g-code to grbl
     l_count = 0
     if settings_mode:
@@ -138,8 +139,9 @@ def start_stream(gcode_file, device_file, quiet=False, settings=False):
         c_line = []
         # periodic() # Start status report periodic timer
         for line in f:
-            if g_count == 80:
+            if g_count > 80 and laser_started is False:
                 serials.start_laser() # Start laser after 80 lines of gcode
+                laser_started = True
             l_count += 1 # Iterate line counter
             # l_block = re.sub('\s|\(.*?\)','',line).upper() # Strip comments/spaces/new line and capitalize
             l_block = line.strip()
@@ -164,10 +166,11 @@ def start_stream(gcode_file, device_file, quiet=False, settings=False):
     print ("G-code streaming finished!\n")
     print ("WARNING: Wait until grbl completes buffered g-code blocks before exiting.")
     # input("  Press <Enter> to exit and disable grbl.")
+    time.sleep(5)
+    serials.stop_laser()
     messagebox.showwarning(title='WARNING:', message='Wait until motors stop moving before hitting OK.')
 
     # Close file and serial port
-    serials.stop_laser()
     f.close()
     s.close()
     return flag
