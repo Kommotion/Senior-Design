@@ -1,7 +1,7 @@
 # Senior-Design
 ##
 
-The software in this repository is meant to be used in a custom laser system. This laser system was developed by computer and electrical engineering students for their senior design project at the University of Central Florida. The laser system itself can be found in the CREOL building at the main campus of Orlando. For more information on the project and the laser system, visit the following link: .
+The software in this repository is meant to be used in a custom laser system. This laser system was developed by computer, photonics, and electrical engineering students for their senior design project at the University of Central Florida. The laser system itself can be found in the CREOL building at the main campus of Orlando. For more information on the project and the laser system, visit the following link: .
 ## Dependencies:
 
 Current Operating Systems:
