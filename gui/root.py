@@ -396,7 +396,7 @@ class Main(ttk.Frame):
         """
         geo = calculators.center(self.root, 800, 500)
         self.root.geometry(geo)
-        self.root.title('3D Laser Etcher')
+        self.root.title('3D Laser Plasma Art')
         self.root.wm_iconbitmap(self.file_path + r'\ucf.ico')
         self.root.option_add('*tearOff', 'FALSE')
 
