@@ -18,6 +18,7 @@ import os
 import imghdr
 import executors
 import serials
+# from copyrights import CopyrightText
 from conversion import ConversionOptions
 from conversion import StlOptions
 from tracing import TracingOptions
@@ -131,23 +132,9 @@ class Main(ttk.Frame):
 
     def show_copyrights(self):
         """ Shows copyright dialogues for all software included """
-        # TODO
-        # Show all the copyrights and credits for software used
-        pass
-
-    def enable_widgets(self, filetype):
-        """ Enables the widgets based on the filetype given
-
-        A regular raster image will enable the next step in 2D-3D conversion
-        A STL file will skip the 2D-3D conversion and enable the slicing widget
-
-        :param filetype: The file extension from the openfile menu
-        :return:
-        """
-
-        # TODO
-        # Parse filetype and determine which widgets
-        # to enable
+        curr_dic = os.path.dirname(os.path.realpath(__file__))[:-3]
+        curr_dic = os.path.join(curr_dic, 'COPYRIGHTS.txt')
+        os.startfile(curr_dic)
 
     def disable_widgets(self):
         """ Disables all the start buttons except the primary open file ones """
@@ -264,7 +251,7 @@ class Main(ttk.Frame):
             return
 
         self.file = file_out
-        self.slicing_options_button.config(state='normal')
+        # self.slicing_options_button.config(state='normal')
         self.slicing_start_button.config(state='normal')
 
         self.stl_start.config(state='disabled')
@@ -350,8 +337,7 @@ class Main(ttk.Frame):
 
         Parses the results for when running the Freecad extrusion and STL output script
         """
-        # TODO
-        # Maybe not even needed
+        # Not needed as of first revision
         pass
 
     def etching_ready(self):
