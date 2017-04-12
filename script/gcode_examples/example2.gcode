@@ -1,6 +1,7 @@
 ; This Gcode produces a square with round edges
 ; using absolute postitioning (G90)
 G90
+$X
 G0 X0.000 Y5.000
 G1 X0.000 Y15.000 F150
 G2 X5.000 Y20.000 I5.000 J0.000
