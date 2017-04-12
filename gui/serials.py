@@ -19,11 +19,14 @@
    devices and calling the scripts to stream Gcode to the MCU.
 """
 
+import serial
 import serial.tools.list_ports
 import os
 import subprocess
+import time
 import stream
 from utils import parsers
+from tkinter import messagebox
 
 
 def pre_test():
@@ -52,14 +55,14 @@ def pre_test():
     return ret_dict
 
 
-def _get_device_path(mcu_serial=None):
+def _get_device_path(target_serial=None):
     """ Returns the device path for first match of given serial """
-    if mcu_serial is None:
+    if target_serial is None:
         return False
 
     ports = list(serial.tools.list_ports.comports())
     for p in ports:
-        if p.serial_number == mcu_serial:
+        if p.serial_number == target_serial:
             return p.device
 
     return False
@@ -84,3 +87,43 @@ def full_test(filename, device_path):
         reason =''
 
     return result, reason
+
+
+def start_laser():
+    """ Establishes a connection and fires the laser """
+    laser_serial = parsers.get_from_config('laser_number', os.path.dirname(os.path.realpath(__file__)))
+    device_path = _get_device_path(laser_serial)
+
+    if device_path is False:
+        message = 'Could not find laser to turn on! Turn it on manually!\n' \
+                  'Etching process will continue after this is closed'
+        messagebox.showerror(title='Error', message=message)
+        return
+
+    s = serial.Serial(device_path, 9600, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
+    s.write('$FIRE 01\r'.encode())
+    s.close()
+
+
+def stop_laser():
+    """ Stops the laser """
+    laser_serial = parsers.get_from_config('laser_number', os.path.dirname(os.path.realpath(__file__)))
+    device_path = _get_device_path(laser_serial)
+
+    if device_path is False:
+        message = 'Could not find laser to turn off! Turn it off manually!\n'
+        messagebox.showerror(title='Error', message=message)
+        return
+
+    s = serial.Serial(device_path, 9600, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
+    s.write('$STOP 00\r'.encode())
+    s.close()
+
+
+if __name__ == "__main__":
+    print('starting')
+    start_laser()
+    print('stopping')
+    time.sleep(2)
+    stop_laser()
+

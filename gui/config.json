@@ -1,6 +1,7 @@
 {
-  "convert_path": "",
-  "potrace_path": "",
-  "slic3r_path": "",
-  "serial_number": ""
+  "convert_path": "C:\\Program Files\\ImageMagick-7.0.5-Q16-HDRI\\convert.exe",
+  "potrace_path": "C:\\Users\\nickd_000\\Desktop\\potrace-1.13.win64\\potrace-1.13.win64\\potrace.exe",
+  "slic3r_path": "C:\\Users\\nickd_000\\Desktop\\slic3r-mswin-x64-1-2-9a-stable\\Slic3r\\slic3r-console.exe",
+  "serial_number": "A506FBEZA",
+  "laser_number": "5"
 }

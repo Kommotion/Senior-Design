@@ -372,7 +372,12 @@ class Main(ttk.Frame):
 
     def etching_start(self):
         """ Begins the etching process """
-        result, reason = serials.full_test(self.file, self.device_path)
+        try:
+            result, reason = serials.full_test(self.file, self.device_path)
+        except:
+            serials.stop_laser()
+            messagebox.showerror(title='Error', message='There was a critical error')
+            return
 
         if result is False:
             messagebox.showerror(title='Error', message=reason)

@@ -51,6 +51,7 @@ Modifications to work with Python3 and laser etching software by Nicolas R.
 #from __future__ import print_function
 
 import serial
+import serials
 import re
 import time
 import sys
@@ -137,6 +138,8 @@ def start_stream(gcode_file, device_file, quiet=False, settings=False):
         c_line = []
         # periodic() # Start status report periodic timer
         for line in f:
+            if g_count == 80:
+                serials.start_laser() # Start laser after 80 lines of gcode
             l_count += 1 # Iterate line counter
             # l_block = re.sub('\s|\(.*?\)','',line).upper() # Strip comments/spaces/new line and capitalize
             l_block = line.strip()
@@ -164,6 +167,7 @@ def start_stream(gcode_file, device_file, quiet=False, settings=False):
     messagebox.showwarning(title='WARNING:', message='Wait until motors stop moving before hitting OK.')
 
     # Close file and serial port
+    serials.stop_laser()
     f.close()
     s.close()
     return flag
