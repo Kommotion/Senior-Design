@@ -58,10 +58,10 @@ Config File (Make sure to configure correctly):
 ## Credits
 
 Laser Plasma Art System developed by a team of four senior student in Senior Design at the University of Central Florida:
-* Nicolas Ramirez
-* Burdley Colas
-* Monushka Sicar
-* Philip Lane
+* Nicolas Ramirez (Software)
+* Burdley Colas (Photonics)
+* Monushka Sicar (Electrical)
+* Philip Lane (Electrical)
 
 Sponsor of Project
 * Dr. MJ Soileau
