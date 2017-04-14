@@ -1,4 +1,4 @@
-# Senior-Design
+# 3D Laser Plasma Art
 ##
 
 The software in this repository is meant to be used in a custom laser system. This laser system was developed by computer, photonics, and electrical engineering students for their senior design project at the University of Central Florida. The laser system itself can be found in the CREOL building at the main campus of Orlando. For more information on the project and the laser system, visit the following link: .
@@ -58,10 +58,10 @@ Config File (Make sure to configure correctly):
 ## Credits
 
 Laser Plasma Art System developed by a team of four senior student in Senior Design at the University of Central Florida:
-* Nicolas Ramirez
-* Burdley Colas
-* Monushka Sicar
-* Philip Lane
+* Nicolas Ramirez (Software)
+* Burdley Colas (Photonics)
+* Monushka Sicar (Electrical)
+* Philip Lane (Electrical)
 
 Sponsor of Project
 * Dr. MJ Soileau
@@ -90,4 +90,3 @@ Software Resources
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
