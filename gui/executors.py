@@ -44,6 +44,7 @@ def exec_imagemagick(filepath, negate, line='', filetype=None, filename=None):
         command = '"{}" "{}" -monochrome -negate "{}" {}'.format(convert_path, filename, file_out, line)
     else:
         command = '"{}" "{}" -monochrome "{}" {}'.format(convert_path, filename, file_out, line)
+    print(command)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
     return file_out, os.path.isfile(file_out)
@@ -127,12 +128,17 @@ def execute_slic3r(filename, filepath):
     return file_out, os.path.isfile(file_out)
 
 
-def execute_scale_stl(filename, filepath):
+def execute_scale_stl(filename, filepath, x, y, z):
     """ Executes the scaling of an STL file via Freecad """
     path = os.path.dirname(os.path.realpath(__file__))
     script = '{}\\stl.py'.format(path)
 
-    command = 'python2 "{}" -i "{}" -o "None" -s 1'.format(script, filename)
+    x = x * 25.4
+    y = y * 25.4
+    z = z * 25.4
+    print(x, y, z)
+
+    command = 'python2 "{}" -i "{}" -o "None" -s 1 -x {} -y {} -z {}'.format(script, filename, x, y, z)
     print(command)
 
     # Terrible exception handling but there is a bug that occasionally occurs

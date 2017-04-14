@@ -59,19 +59,20 @@ def main_conversion(input_file, output_file, extrusion):
     print("dbg999: end of script")
 
 
-def stl_scaling(input_file, output_file):
+def stl_scaling(input_file, output_file, x, y, z):
     """ Scales the stl file to the given dimensions """
     import Mesh
     mesh = Mesh.Mesh("{}".format(input_file))
     print(mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)
 
-    while any(length > 25.4 for length in (mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)):
-        if mesh.BoundBox.XLength > 25.4 or mesh.BoundBox.YLength > 25.4:
+    # while any(length > 25.4 for length in (mesh.BoundBox.XLength, mesh.BoundBox.YLength, mesh.BoundBox.ZLength)):
+    while (mesh.BoundBox.XLength > x) or (mesh.BoundBox.YLength > y) or (mesh.BoundBox.ZLength > z):
+        if mesh.BoundBox.XLength > x or mesh.BoundBox.YLength > y:
             x_y_scale = .75
         else:
             x_y_scale = 1
 
-        if mesh.BoundBox.ZLength > 25.4:
+        if mesh.BoundBox.ZLength > z:
             z_scale = .75
         else:
             z_scale = 1
@@ -88,11 +89,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="STL Conversion")
     parser.add_argument('-i', '--input', help='The input file (Required)', required=True)
     parser.add_argument('-o', '--output', help='The output file (Required)', required=True)
-    parser.add_argument('-e', '--extrusion', help='The distance for extrusion (Required)', required=False)
+    parser.add_argument('-e', '--extrusion', help='The distance for extrusion (Required)', required=False, default=None)
     parser.add_argument('-s', '--scale', help='True or False for scaling STL to fit platform. Default False', default=0)
-    # parser.add_argument('-x', help='The max X of etching')
-    # parser.add_argument('-y', help='The max Y of etching')
-    # parser.add_argument('-z', help='The max Z of etching')
+    parser.add_argument('-x', help='The max X of etching in mm', required=False, type=float)
+    parser.add_argument('-y', help='The max Y of etching in mm', required=False, type=float)
+    parser.add_argument('-z', help='The max Z of etching in mm', required=False, type=float)
 
     # There is no argument validation done, we assume the user put in correct args
     results = parser.parse_args()
@@ -103,6 +104,6 @@ if __name__ == "__main__":
 
     # Scale argument
     if scale == 1:
-        stl_scaling(input_file, output_file)
+        stl_scaling(input_file, output_file, float(results.x), float(results.y), float(results.z))
     else:
         main_conversion(input_file, output_file, float(extrusion))

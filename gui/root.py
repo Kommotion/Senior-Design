@@ -18,6 +18,8 @@ import os
 import imghdr
 import executors
 import serials
+import fileinput
+import sys
 # from copyrights import CopyrightText
 from conversion import ConversionOptions
 from conversion import StlOptions
@@ -28,6 +30,9 @@ from tkinter import messagebox
 from utils import constants
 from utils import parsers
 from utils import calculators
+# from tempfile import mkstemp
+# from shutil import move
+# from os import remove, close
 #from utils import point
 from PIL import Image, ImageTk
 
@@ -51,13 +56,12 @@ class Main(ttk.Frame):
         if not os.path.exists(self.objects_path):
             os.makedirs(self.objects_path)
 
-        self.x = tkinter.IntVar()
-        self.y = tkinter.IntVar()
-        self.z = tkinter.IntVar()
-        self.x.set(-1)
-        self.y.set(-1)
-        self.z.set(-1)
-        #self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
+        self.x = tkinter.DoubleVar()
+        self.y = tkinter.DoubleVar()
+        self.z = tkinter.DoubleVar()
+        self.x.set(3)
+        self.y.set(3)
+        self.z.set(3)
 
         self.device_path = None
 
@@ -107,10 +111,12 @@ class Main(ttk.Frame):
         self.test_connections_button.config(state='disabled')
         self.etching_start.config(state='disabled')
 
-        self.x.set(-1)
-        self.y.set(-1)
-        self.z.set(-1)
-        #self.current_cords = point.Point(self.x.get(), self.y.get(), self.z.get())
+        self.current_x_entry.config(state='disabled')
+        self.current_y_entry.config(state='disabled')
+        self.current_z_entry.config(state='disabled')
+        self.x.set(3)
+        self.y.set(3)
+        self.z.set(3)
 
     def _quit(self):
         """ Terminates the program """
@@ -175,8 +181,11 @@ class Main(ttk.Frame):
 
         # Enable the next step, Slicing if STL file
         if file_type == 'stl':
-            self.slicing_options_button.config(state='normal')
+            #self.slicing_options_button.config(state='normal')
             self.slicing_start_button.config(state='normal')
+            self.current_z_entry.config(state='normal')
+            self.current_y_entry.config(state='normal')
+            self.current_x_entry.config(state='normal')
         elif file_type == 'gcode':
             self.test_connections_button.config(state='normal')
         else:
@@ -253,6 +262,9 @@ class Main(ttk.Frame):
         self.file = file_out
         # self.slicing_options_button.config(state='normal')
         self.slicing_start_button.config(state='normal')
+        self.current_y_entry.config(state='normal')
+        self.current_z_entry.config(state='normal')
+        self.current_x_entry.config(state='normal')
 
         self.stl_start.config(state='disabled')
         self.stl_result_var.set('PASSED')
@@ -267,8 +279,23 @@ class Main(ttk.Frame):
         """
         self.slicing_result_var.set('RUNNING')
 
+        mod_x = self.x.get() - 1
+        mod_y = self.y.get() - 1
+        mod_z = self.z.get() - 1
         # Run the scaler before slicing
-        executors.execute_scale_stl(self.file, self.objects_path)
+        executors.execute_scale_stl(self.file, self.objects_path, mod_x, mod_y, mod_z)
+
+        # Edit the Ini to include bed frame dimensions
+        config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.ini')
+        mod_x = 25.4 * mod_x
+        mod_y = 25.4 * mod_y
+        mod_z = 25.4 * mod_z
+        shape = '0x0,{}x0,{}x{},0x{}'.format(mod_x, mod_x, mod_y, mod_y)
+
+        for line in fileinput.input(config_path, inplace=True):
+            if line.strip().startswith('bed_shape = '):
+                line = 'bed_shape = {}\n'.format(shape)
+            sys.stdout.write(line)
 
         options = dict()
         options['filename'] = self.file
@@ -519,19 +546,37 @@ class Main(ttk.Frame):
 
         self.slicing_options_button = ttk.Button(self.slicing_frame, text='Options', command=self.slicing_options,
                                                  state=tkinter.DISABLED)
-        self.slicing_options_button.grid(row=2,padx=5, pady=5, sticky=tkinter.NW)
+        self.slicing_options_button.grid(row=3,padx=5, pady=5, sticky=tkinter.NW)
 
         self.slicing_start_button = ttk.Button(self.slicing_frame, text='Start', command=self.slicing_start,
                                                state=tkinter.DISABLED)
-        self.slicing_start_button.grid(row=2, column=1, padx=5, pady=5)
+        self.slicing_start_button.grid(row=3, column=1, padx=5, pady=5, columnspan=3)
 
-        self.slicing_frame.grid_columnconfigure(2, minsize=65)
+        #self.slicing_frame.grid_columnconfigure(2, minsize=65)
 
         self.slicing_result_var = tkinter.StringVar()
         self.slicing_result_label = ttk.Label(self.slicing_frame, textvariable=self.slicing_result_var, anchor=tkinter.CENTER,
                                               background='gray60', width=20)
         self.slicing_result_var.set('NOT RUN')
-        self.slicing_result_label.grid(row=2, column=3, padx=5, pady=5)
+        self.slicing_result_label.grid(row=3, column=4, padx=5, pady=5, columnspan=3)
+
+        self.current_position_label = ttk.Label(self.slicing_frame, text='Glass Dimensions (Inches):')
+        self.current_position_label.grid(row=2, padx=5, pady=5)
+
+        self.current_x_label = ttk.Label(self.slicing_frame, text='X:')
+        self.current_y_label = ttk.Label(self.slicing_frame, text='Y:')
+        self.current_z_label = ttk.Label(self.slicing_frame, text='Z:')
+
+        self.current_x_entry = ttk.Entry(self.slicing_frame, textvariable=self.x, width=4, state=tkinter.DISABLED)
+        self.current_y_entry = ttk.Entry(self.slicing_frame, textvariable=self.y, width=4, state=tkinter.DISABLED)
+        self.current_z_entry = ttk.Entry(self.slicing_frame, textvariable=self.z, width=4, state=tkinter.DISABLED)
+
+        self.current_x_label.grid(row=2, column=1)
+        self.current_x_entry.grid(row=2, column=2)
+        self.current_y_label.grid(row=2, column=3)
+        self.current_y_entry.grid(row=2, column=4)
+        self.current_z_label.grid(row=2, column=5)
+        self.current_z_entry.grid(row=2, column=6)
 
         # --- Etching widgets ----
         self.etching_frame = ttk.Frame(self.root, width=200, height=15)
@@ -546,24 +591,6 @@ class Main(ttk.Frame):
         #self.choose_connections_button = ttk.Button(self.etching_frame, text='Choose connections', command=self.choose_connections,
         #                                     state=tkinter.DISABLED, width=20)
         #self.choose_connections_button.grid(row=3, padx=5, pady=5)
-
-        self.current_position_label = ttk.Label(self.etching_frame, text='Current Coordinates of Stage:')
-        # self.current_position_label.grid(row=3, padx=5, pady=5)
-
-        self.current_x_label = ttk.Label(self.etching_frame, text='X:')
-        self.current_y_label = ttk.Label(self.etching_frame, text='Y:')
-        self.current_z_label = ttk.Label(self.etching_frame, text='Z:')
-
-        self.current_x_entry = ttk.Entry(self.etching_frame, textvariable=self.x, width=4, state=tkinter.DISABLED)
-        self.current_y_entry = ttk.Entry(self.etching_frame, textvariable=self.y, width=4, state=tkinter.DISABLED)
-        self.current_z_entry = ttk.Entry(self.etching_frame, textvariable=self.z, width=4, state=tkinter.DISABLED)
-
-        # self.current_x_label.grid(row=3, column=1)
-        # self.current_x_entry.grid(row=3, column=2)
-        # self.current_y_label.grid(row=3, column=3)
-        # self.current_y_entry.grid(row=3, column=4)
-        # self.current_z_label.grid(row=3, column=5)
-        # self.current_z_entry.grid(row=3, column=6)
 
         self.test_connections_button = ttk.Button(self.etching_frame, text='Test Connections', command=self.etching_ready,
                                                   state=tkinter.DISABLED, width=20)

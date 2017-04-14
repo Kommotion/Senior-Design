@@ -1,7 +1,7 @@
 {
-  "convert_path": "C:\\Users\\Administrator\\Desktop\\3D Laser Etcher\\programs\\ImageMagick-7.0.5-Q16-HDRI\\convert.exe",
-  "potrace_path": "C:\\Users\\Administrator\\Desktop\\3D Laser Etcher\\programs\\potrace-1.14.win64\\potrace.exe",
-  "slic3r_path": "C:\\Users\\Administrator\\Desktop\\3D Laser Etcher\\programs\\Slic3r\\slic3r-console.exe",
+  "convert_path": "C:\\Users\\Administrator\\Desktop\\3D Laser Plasma Art\\programs\\ImageMagick-7.0.5-Q16-HDRI\\convert.exe",
+  "potrace_path": "C:\\Users\\Administrator\\Desktop\\3D Laser Plasma Art\\programs\\potrace-1.14.win64\\potrace.exe",
+  "slic3r_path": "C:\\Users\\Administrator\\Desktop\\3D Laser Plasma Art\\programs\\Slic3r\\slic3r-console.exe",
   "serial_number": "A506FBEZA",
   "laser_number": "5"
 }
