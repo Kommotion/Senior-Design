@@ -166,7 +166,7 @@ def start_stream(gcode_file, device_file, quiet=False, settings=False):
     print ("G-code streaming finished!\n")
     print ("WARNING: Wait until grbl completes buffered g-code blocks before exiting.")
     # input("  Press <Enter> to exit and disable grbl.")
-    time.sleep(10)
+    time.sleep(5)
     serials.stop_laser()
     messagebox.showwarning(title='WARNING:', message='Wait until motors stop moving before hitting OK.')
 
