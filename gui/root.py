@@ -59,9 +59,9 @@ class Main(ttk.Frame):
         self.x = tkinter.DoubleVar()
         self.y = tkinter.DoubleVar()
         self.z = tkinter.DoubleVar()
-        self.x.set(3)
-        self.y.set(3)
-        self.z.set(3)
+        self.x.set(2.75)
+        self.y.set(2.75)
+        self.z.set(2.75)
 
         self.device_path = None
 
@@ -114,9 +114,9 @@ class Main(ttk.Frame):
         self.current_x_entry.config(state='disabled')
         self.current_y_entry.config(state='disabled')
         self.current_z_entry.config(state='disabled')
-        self.x.set(3)
-        self.y.set(3)
-        self.z.set(3)
+        self.x.set(2.75)
+        self.y.set(2.75)
+        self.z.set(2.75)
 
     def _quit(self):
         """ Terminates the program """
@@ -279,9 +279,9 @@ class Main(ttk.Frame):
         """
         self.slicing_result_var.set('RUNNING')
 
-        mod_x = self.x.get() - 1
-        mod_y = self.y.get() - 1
-        mod_z = self.z.get() - 1
+        mod_x = self.x.get() - .375
+        mod_y = self.y.get() - .375
+        mod_z = self.z.get() - .375
         # Run the scaler before slicing
         executors.execute_scale_stl(self.file, self.objects_path, mod_x, mod_y, mod_z)
 
@@ -297,10 +297,13 @@ class Main(ttk.Frame):
                 line = 'bed_shape = {}\n'.format(shape)
             sys.stdout.write(line)
 
+        mod_x = self.x.get() - .375
+        mod_y = self.y.get() - .375
+
         options = dict()
         options['filename'] = self.file
         options['filepath'] = self.objects_path
-        file_out, result = executors.execute_slic3r(**options)
+        file_out, result = executors.execute_slic3r(x=mod_x, y=mod_y, **options)
 
         if not result:
             messagebox.showerror('Error', 'There was an error in the Slicing process!')

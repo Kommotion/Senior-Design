@@ -105,7 +105,7 @@ def stl_conversion(root, filename, filepath, extrusion):
     return file_out, os.path.isfile(file_out)
 
 
-def execute_slic3r(filename, filepath):
+def execute_slic3r(filename, filepath, x ,y):
     """ Slices the STL object into Gcode using Slic3r
 
     In order for this to work, path to slic3r-console.exe needs to be provided in the config.json file
@@ -114,13 +114,16 @@ def execute_slic3r(filename, filepath):
     name = name[len(name) - 1].split('.')[0]
     file_out = os.path.join(filepath, '{}.gcode'.format(name))
 
+    x = 25.4 * x / 2
+    y = 25.4 * y / 2
+
     if os.path.isfile(file_out):
         os.remove(file_out)
 
     slicer = parsers.get_from_config('slic3r_path', os.path.dirname(os.path.realpath(__file__)))
     config = os.path.dirname(os.path.realpath(__file__)) + '\\config.ini'
 
-    command = '"{}" --load "{}" "{}" --print-center 12.7,12.7'.format(slicer, config, filename)
+    command = '"{}" --load "{}" "{}" --print-center {},{}'.format(slicer, config, filename, x, y)
     print(command)
     result = subprocess.run(command, universal_newlines=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                             shell=True)
